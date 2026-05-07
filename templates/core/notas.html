@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Boletim e Notas | Educas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="app-page">
+    <header class="main-header">
+        <div class="container header-container app-header">
+            <a href="feed.html" class="logo">
+                <img src="assets/img/logo.png" alt="Logo Educas">
+                Educas
+            </a>
+            <div class="header-actions">
+                <a href="profile.html" class="text-link">Meu Perfil</a>
+                <a href="login.html" class="btn btn-secondary btn-compact">Sair</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <aside class="sidebar-left">
+            <div class="card sidebar-menu">
+                <ul>
+                    <li><a href="feed.html"><span aria-hidden="true">🏠</span> Feed Geral</a></li>
+                    <li><a href="profile.html"><span aria-hidden="true">👤</span> Meu Perfil</a></li>
+                    <li><a href="turmas.html"><span aria-hidden="true">👥</span> Minhas Turmas</a></li>
+                    <li><a href="notas.html" class="active"><span aria-hidden="true">📊</span> Boletim & Notas</a></li>
+                    <li><a href="calendario.html"><span aria-hidden="true">📅</span> Calendario</a></li>
+                    <li><a href="administrador.html"><span aria-hidden="true">⚙️</span> Administrador</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <section class="app-main">
+            <div class="page-heading">
+                <span class="page-kicker">2o bimestre</span>
+                <h1>Boletim e Notas</h1>
+                <p>Veja medias, frequencia, avaliacoes pendentes e a situacao de cada disciplina.</p>
+            </div>
+
+            <div class="dashboard-grid">
+                <div class="card metric-card">
+                    <span class="metric-label">Media Geral</span>
+                    <strong>8.5</strong>
+                    <span class="metric-status positive">Acima da meta</span>
+                </div>
+                <div class="card metric-card">
+                    <span class="metric-label">Frequencia</span>
+                    <strong>92%</strong>
+                    <span class="metric-status positive">Regular</span>
+                </div>
+                <div class="card metric-card">
+                    <span class="metric-label">Pendencias</span>
+                    <strong>2</strong>
+                    <span class="metric-status warning">Entregas abertas</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="widget-title">Notas por Disciplina</h3>
+                <div class="table-wrap">
+                    <table class="compact-table">
+                        <thead>
+                            <tr>
+                                <th>Disciplina</th>
+                                <th>AV1</th>
+                                <th>AV2</th>
+                                <th>Trabalho</th>
+                                <th>Media</th>
+                                <th>Situacao</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Matematica</td>
+                                <td>8.0</td>
+                                <td>9.0</td>
+                                <td>8.5</td>
+                                <td><strong>8.5</strong></td>
+                                <td><span class="status-pill approved">Aprovado</span></td>
+                            </tr>
+                            <tr>
+                                <td>Historia</td>
+                                <td>7.5</td>
+                                <td>8.0</td>
+                                <td>9.0</td>
+                                <td><strong>8.1</strong></td>
+                                <td><span class="status-pill approved">Aprovado</span></td>
+                            </tr>
+                            <tr>
+                                <td>Biologia</td>
+                                <td>6.8</td>
+                                <td>7.2</td>
+                                <td>8.0</td>
+                                <td><strong>7.3</strong></td>
+                                <td><span class="status-pill attention">Atencao</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="widget-title">Evolucao do Bimestre</h3>
+                <div class="grade-bars">
+                    <div>
+                        <span>Matematica</span>
+                        <div class="progress-track"><div class="progress-fill" style="width: 85%;"></div></div>
+                    </div>
+                    <div>
+                        <span>Historia</span>
+                        <div class="progress-track"><div class="progress-fill" style="width: 81%;"></div></div>
+                    </div>
+                    <div>
+                        <span>Biologia</span>
+                        <div class="progress-track"><div class="progress-fill" style="width: 73%;"></div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <aside class="sidebar-right">
+            <div class="card">
+                <h3 class="widget-title">Proximas Entregas</h3>
+                <div class="summary-list">
+                    <div>
+                        <strong>Trabalho de Historia</strong>
+                        <span class="muted-text">15 Mai - 23:59</span>
+                    </div>
+                    <div>
+                        <strong>Lista de Matematica</strong>
+                        <span class="muted-text">20 Mai - Aula</span>
+                    </div>
+                    <div>
+                        <strong>Relatorio de Biologia</strong>
+                        <span class="muted-text">29 Mai - Laboratorio</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>

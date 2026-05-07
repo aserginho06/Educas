@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Usuario | Educas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <main class="auth-wrapper">
+        <div class="card auth-card registration-card">
+            <div class="auth-header">
+                <a href="index.html" class="logo">
+                    <img src="assets/img/logo.png" alt="Logo Educas">
+                    Educas
+                </a>
+                <p class="auth-subtitle">Crie um novo acesso para aluno, professor, gestor ou responsavel.</p>
+            </div>
+
+            <form action="feed.html">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="name" class="label-left">Nome completo</label>
+                        <input type="text" id="name" name="name" required placeholder="Nome do usuario">
+                    </div>
+                    <div class="form-group">
+                        <label for="role" class="label-left">Perfil</label>
+                        <select id="role" name="role" required>
+                            <option value="">Selecione</option>
+                            <option value="aluno">Aluno</option>
+                            <option value="professor">Professor</option>
+                            <option value="gestor">Gestor</option>
+                            <option value="responsavel">Responsavel</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email" class="label-left">E-mail</label>
+                        <input type="email" id="email" name="email" required placeholder="usuario@educas.com">
+                    </div>
+                    <div class="form-group">
+                        <label for="registration" class="label-left">Matricula</label>
+                        <input type="text" id="registration" name="registration" required placeholder="202600000">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="class" class="label-left">Turma</label>
+                        <input type="text" id="class" name="class" placeholder="Ex: 3o Ano B">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone" class="label-left">Telefone</label>
+                        <input type="tel" id="phone" name="phone" placeholder="(00) 00000-0000">
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="password" class="label-left">Senha</label>
+                        <input type="password" id="password" name="password" required placeholder="Digite uma senha">
+                    </div>
+                    <div class="form-group">
+                        <label for="confirm-password" class="label-left">Confirmar senha</label>
+                        <input type="password" id="confirm-password" name="confirm-password" required placeholder="Repita a senha">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-submit">Cadastrar Usuario</button>
+            </form>
+
+            <div class="auth-links">
+                <p>Ja tem conta? <a href="login.html">Entrar agora</a></p>
+                <p><a href="feed.html">Voltar para o sistema</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | Educas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <main class="auth-wrapper">
+        <div class="card auth-card">
+            <div class="auth-header">
+                <a href="index.html" class="logo">
+                    <img src="assets/img/logo.png" alt="Logo Educas">
+                    Educas
+                </a>
+                <p class="auth-subtitle">Bem-vindo de volta! Acesse sua conta.</p>
+            </div>
+
+            <form action="feed.html">
+                <div class="form-group">
+                    <label for="email" class="label-left">E-mail ou Matricula</label>
+                    <input type="email" id="email" required placeholder="ex: aluno@escola.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="password" class="label-left">Senha</label>
+                    <input type="password" id="password" required placeholder="••••••••">
+                </div>
+
+                <button type="submit" class="btn btn-primary btn-submit">Entrar</button>
+            </form>
+
+            <div class="auth-links">
+                <p><a href="#">Esqueceu a senha?</a></p>
+                <p>Nao tem acesso? <a href="cadastro.html">Cadastrar usuario</a></p>
+                <p><a href="index.html">Voltar para a Home</a></p>
+            </div>
+        </div>
+    </main>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>

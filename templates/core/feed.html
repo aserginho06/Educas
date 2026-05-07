@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed | Educas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body class="app-page">
+    <header class="main-header">
+        <div class="container header-container app-header">
+            <a href="feed.html" class="logo">
+                <img src="assets/img/logo.png" alt="Logo Educas">
+                Educas
+            </a>
+            <nav class="navbar navbar-static">
+                <div class="search-bar search-bar-hidden">Buscar...</div>
+            </nav>
+            <div class="header-actions">
+                <a href="profile.html" class="text-link">Meu Perfil</a>
+                <a href="login.html" class="btn btn-secondary btn-compact">Sair</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="app-container">
+        <aside class="sidebar-left">
+            <div class="card sidebar-menu">
+                <ul>
+                    <li><a href="feed.html" class="active"><span aria-hidden="true">🏠</span> Feed Geral</a></li>
+                    <li><a href="profile.html"><span aria-hidden="true">👤</span> Meu Perfil</a></li>
+                    <li><a href="turmas.html"><span aria-hidden="true">👥</span> Minhas Turmas</a></li>
+                    <li><a href="notas.html"><span aria-hidden="true">📊</span> Boletim & Notas</a></li>
+                    <li><a href="calendario.html"><span aria-hidden="true">📅</span> Calendario</a></li>
+                    <li><a href="administrador.html"><span aria-hidden="true">⚙️</span> Administrador</a></li>
+                </ul>
+            </div>
+        </aside>
+
+        <section class="feed-content app-main" id="feed-infinite-scroll">
+            <div class="card">
+                <div class="compose-row">
+                    <div class="avatar avatar-default" role="img" aria-label="Avatar padrao do usuario"></div>
+                    <input type="text" class="compose-input" placeholder="Compartilhe uma duvida ou material...">
+                </div>
+            </div>
+
+            <article class="card">
+                <div class="post-header">
+                    <div class="avatar avatar-brand">IA</div>
+                    <div class="user-info">
+                        <h4>Educas AI <span class="pill-highlight">Sugestao</span></h4>
+                        <span>Agora mesmo • Baseado na sua nota em Historia</span>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Ola, Thiallisson! Percebi que voce esta estudando a <strong>Revolucao Industrial</strong>. Aqui esta um resumo visual e um quiz rapido para ajudar na prova de sexta.</p>
+                </div>
+                <div class="post-actions">
+                    <button class="action-btn emoji-action" aria-label="Curtir" title="Curtir">❤️</button>
+                    <button class="action-btn emoji-action" aria-label="Comentar" title="Comentar">💬</button>
+                    <button class="action-btn emoji-action" aria-label="Salvar" title="Salvar">🔖</button>
+                </div>
+            </article>
+
+            <article class="card">
+                <div class="post-header">
+                    <div class="avatar avatar-default" role="img" aria-label="Avatar padrao do professor"></div>
+                    <div class="user-info">
+                        <h4>Prof. Roberto Santos</h4>
+                        <span>2 horas atras • Matematica 3o Ano B</span>
+                    </div>
+                </div>
+                <div class="post-content">
+                    <p>Pessoal, segue o gabarito comentado da lista de exercicios sobre Funcoes. Duvidas podem deixar nos comentarios!</p>
+                    <div class="attachment-chip">
+                        <span>PDF</span> Gabarito_Lista_03.pdf
+                    </div>
+                </div>
+                <div class="post-actions">
+                    <button class="action-btn emoji-action" aria-label="12 curtidas" title="12 curtidas">❤️ 12</button>
+                    <button class="action-btn emoji-action" aria-label="4 comentarios" title="4 comentarios">💬 4</button>
+                    <button class="action-btn emoji-action" aria-label="Salvar" title="Salvar">🔖</button>
+                </div>
+            </article>
+        </section>
+
+        <aside class="sidebar-right">
+            <div class="card calendar-card">
+                <div class="calendar-header">
+                    <div>
+                        <span class="calendar-eyebrow">Calendario</span>
+                        <h3 data-calendar-title>Maio 2026</h3>
+                    </div>
+                    <div class="calendar-actions">
+                        <div class="calendar-controls" aria-label="Controles do calendario">
+                            <button type="button" data-calendar-prev aria-label="Mes anterior">&#8249;</button>
+                            <button type="button" data-calendar-next aria-label="Proximo mes">&#8250;</button>
+                        </div>
+                        <a href="calendario.html" class="calendar-link" aria-label="Abrir calendario completo">Ver</a>
+                    </div>
+                </div>
+                <div class="mini-calendar" data-calendar="mini" aria-label="Calendario de Maio de 2026">
+                    <span class="weekday">Seg</span>
+                    <span class="weekday">Ter</span>
+                    <span class="weekday">Qua</span>
+                    <span class="weekday">Qui</span>
+                    <span class="weekday">Sex</span>
+                    <span class="weekday">Sab</span>
+                    <span class="weekday">Dom</span>
+                    <span class="muted-day">27</span>
+                    <span class="muted-day">28</span>
+                    <span class="muted-day">29</span>
+                    <span class="muted-day">30</span>
+                    <span>1</span>
+                    <span>2</span>
+                    <span>3</span>
+                    <span>4</span>
+                    <span>5</span>
+                    <span class="today">6</span>
+                    <span>7</span>
+                    <span class="event-day">8</span>
+                    <span>9</span>
+                    <span>10</span>
+                    <span>11</span>
+                    <span>12</span>
+                    <span>13</span>
+                    <span>14</span>
+                    <span class="event-day">15</span>
+                    <span>16</span>
+                    <span>17</span>
+                    <span>18</span>
+                    <span>19</span>
+                    <span>20</span>
+                    <span>21</span>
+                    <span>22</span>
+                    <span>23</span>
+                    <span>24</span>
+                    <span>25</span>
+                    <span>26</span>
+                    <span>27</span>
+                    <span>28</span>
+                    <span class="event-day">29</span>
+                    <span>30</span>
+                    <span>31</span>
+                </div>
+                <div class="calendar-events" data-calendar-events>
+                    <div>
+                        <strong>08 Mai</strong>
+                        <span>Simulado de Matematica</span>
+                    </div>
+                    <div>
+                        <strong>15 Mai</strong>
+                        <span>Entrega de Historia</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="widget-title">Proximas Avaliacoes</h3>
+                <div class="notification-item">
+                    <div class="notification-icon">AV</div>
+                    <div>
+                        <strong>Matematica</strong><br>
+                        <span class="muted-text">28 Nov - Prova Bimestral</span>
+                    </div>
+                </div>
+                <div class="notification-item">
+                    <div class="notification-icon">AT</div>
+                    <div>
+                        <strong>Biologia</strong><br>
+                        <span class="muted-text">30 Nov - Entrega Trabalho</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="widget-title">Ranking da Turma</h3>
+                <p class="widget-copy">Voce esta em <strong>5o lugar</strong> essa semana!</p>
+                <div class="progress-track">
+                    <div class="progress-fill" style="width: 70%;"></div>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script src="assets/js/script.js"></script>
+</body>
+</html>
