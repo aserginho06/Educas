@@ -1,190 +1,239 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feed | Educas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body class="app-page">
-    <header class="main-header">
-        <div class="container header-container app-header">
-            <a href="feed.html" class="logo">
-                <img src="assets/img/logo.png" alt="Logo Educas">
-                Educas
-            </a>
-            <nav class="navbar navbar-static">
-                <div class="search-bar search-bar-hidden">Buscar...</div>
-            </nav>
-            <div class="header-actions">
-                <a href="profile.html" class="text-link">Meu Perfil</a>
-                <a href="login.html" class="btn btn-secondary btn-compact">Sair</a>
+{% extends "core/base_app.html" %}
+
+{% block title %}Feed | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading">
+    <span class="page-kicker">Comunicação acadêmica</span>
+    <h1>Feed central</h1>
+    <p>Agora o mural usa espaço de verdade, organiza o que importa e para de parecer remendo.</p>
+</div>
+
+{% if messages %}
+<div class="card app-alert-stack">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<section class="app-content-grid feed-layout">
+    <div class="app-content-primary">
+        {% if request.user.role == 'teacher' or request.user.role == 'admin' %}
+        <div class="card composer-card">
+            <div class="composer-heading">
+                <div>
+                    <span class="page-kicker">Nova postagem</span>
+                    <h2>Publicar no mural</h2>
+                </div>
+                <div class="composer-actions">
+                    <button type="button" class="btn btn-secondary btn-compact" data-ai-review-btn>Revisar com IA</button>
+                    <button type="submit" form="feed-post-form" class="btn btn-primary btn-compact">Publicar</button>
+                </div>
+            </div>
+            <form id="feed-post-form" method="post" enctype="multipart/form-data" class="contact-form ajax-post-form" data-create-post-url="{% url 'core:feed' %}" data-ai-review-url="{% url 'core:feed_review_ai' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_post">
+                <div class="form-message muted-text" data-post-form-message>
+                    {% for error in post_form.non_field_errors %}{{ error }}{% endfor %}
+                </div>
+                <div class="composer-form-grid">
+                    <div class="form-group">
+                        <label for="{{ post_form.classroom.id_for_label }}">Turma</label>
+                        {{ post_form.classroom }}
+                        {{ post_form.classroom.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ post_form.subject.id_for_label }}">Disciplina</label>
+                        {{ post_form.subject }}
+                        {{ post_form.subject.errors }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ post_form.post_type.id_for_label }}">Tipo</label>
+                        {{ post_form.post_type }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ post_form.title.id_for_label }}">Título</label>
+                        {{ post_form.title }}
+                        {{ post_form.title.errors }}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="{{ post_form.content.id_for_label }}">Mensagem</label>
+                    {{ post_form.content }}
+                    {{ post_form.content.errors }}
+                </div>
+                <div class="composer-form-grid composer-form-grid-bottom">
+                    <div class="form-group file-upload-field" data-file-upload>
+                        <label for="{{ post_form.attachment.id_for_label }}">Anexo</label>
+                        <div class="file-upload-box">
+                            {{ post_form.attachment }}
+                            <div class="file-upload-copy">
+                                <strong>Arraste um arquivo ou clique para selecionar</strong>
+                                <span data-file-upload-text>Nenhum arquivo selecionado</span>
+                            </div>
+                        </div>
+                        {{ post_form.attachment.errors }}
+                    </div>
+                    <div class="form-group form-checkbox-panel">
+                        <label for="{{ post_form.is_pinned.id_for_label }}">Fixar no topo</label>
+                        <div class="toggle-line">
+                            {{ post_form.is_pinned }}
+                            <span>Destaque esse aviso para a turma.</span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+
+        <div data-feed-list class="stack-grid">
+            {% for post in posts %}
+            <article class="card live-post-card" data-post-id="{{ post.id }}">
+                <div class="post-header">
+                    <div class="avatar avatar-brand">{{ post.author.first_name|slice:":2"|upper }}</div>
+                    <div class="user-info">
+                        <h4>
+                            {{ post.title }}
+                            {% if post.is_pinned %}<span class="pill-highlight">Fixado</span>{% endif %}
+                        </h4>
+                        <span>{{ post.author.full_name|default:post.author.email }} · {{ post.classroom.name }}{% if post.subject %} · {{ post.subject.name }}{% endif %} · {{ post.created_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </div>
+
+                <div class="post-content">
+                    <p>{{ post.content|linebreaksbr }}</p>
+                    {% if post.attachment %}
+                        {% if post.attachment_is_image %}
+                        <p><img src="{{ post.attachment.url }}" alt="{{ post.title }}" class="post-cover-image"></p>
+                        {% endif %}
+                        <p class="attachment-chip">
+                            <span>{{ post.attachment_extension|upper|cut:"." }}</span>
+                            <a href="{{ post.attachment.url }}" target="_blank" rel="noopener noreferrer">{{ post.attachment.name|cut:"posts/" }}</a>
+                        </p>
+                    {% endif %}
+                </div>
+
+                <div class="post-actions">
+                    <button type="button" class="action-btn action-btn-heart {% if post.reaction_payload.current_user_reaction %}is-active{% endif %}" data-react-url="{% url 'core:feed_react' %}" data-post-id="{{ post.id }}" data-reaction-type="like" aria-label="Curtir publicação">
+                        <span>Curtir</span>
+                    </button>
+                    <span class="action-stat" data-like-count>{{ post.reaction_payload.total }} curtida(s)</span>
+                    <button type="button" class="action-btn action-stat" data-comment-focus>
+                        <span data-comment-count>{{ post.comments.count }} comentário(s)</span>
+                    </button>
+                    {% if request.user.role == 'admin' or post.author_id == request.user.id %}
+                    <form method="post">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="delete_post">
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+                        <button class="action-btn action-stat" type="submit">Excluir</button>
+                    </form>
+                    {% endif %}
+                </div>
+
+                <div class="post-comments-panel">
+                    <h4 class="widget-title">Comentários</h4>
+                    <div class="comment-stream" data-comment-stream>
+                        {% for comment in post.comments.all %}
+                        <div class="comment-card" data-comment-id="{{ comment.id }}">
+                            <div class="comment-avatar">
+                                {% if comment.author.avatar_url %}
+                                <img src="{{ comment.author.avatar_url }}" alt="{{ comment.author.full_name|default:comment.author.email }}">
+                                {% else %}
+                                <span>{{ comment.author.first_name|slice:":1"|upper }}{{ comment.author.last_name|slice:":1"|upper }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="comment-body">
+                                <strong>{{ comment.author.full_name|default:comment.author.email }}</strong>
+                                <span class="muted-text">{{ comment.created_at|date:"d/m/Y H:i" }}</span>
+                                <p>{{ comment.content|linebreaksbr }}</p>
+                                {% if request.user.role == 'admin' or comment.author_id == request.user.id %}
+                                <button type="button" class="comment-delete-btn" data-comment-delete-url="{% url 'core:feed_delete_comment' %}" data-comment-id="{{ comment.id }}">Excluir</button>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="muted-text" data-empty-comments>Nenhum comentário ainda.</p>
+                        {% endfor %}
+                    </div>
+
+                    <form method="post" class="contact-form ajax-comment-form" data-comment-url="{% url 'core:feed_comment' %}">
+                        {% csrf_token %}
+                        <input type="hidden" name="post_id" value="{{ post.id }}">
+                        <div class="form-group">
+                            <label for="comment-{{ post.id }}">Adicionar comentário</label>
+                            <textarea id="comment-{{ post.id }}" name="comment-content" rows="2" placeholder="Escreva seu comentário."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-secondary btn-compact">Comentar</button>
+                    </form>
+                </div>
+            </article>
+            {% empty %}
+            <article class="card empty-state-card">
+                <h3 class="widget-title">Feed vazio</h3>
+                <p data-feed-empty-state>Ninguém publicou nada ainda. Pelo menos agora o espaço presta.</p>
+            </article>
+            {% endfor %}
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card calendar-card">
+            <div class="calendar-header">
+                <div>
+                    <span class="calendar-eyebrow">Agenda rápida</span>
+                    <h3 data-calendar-title>Mês atual</h3>
+                </div>
+                <div class="calendar-actions">
+                    <div class="calendar-controls" aria-label="Controles do calendário">
+                        <button type="button" data-calendar-prev aria-label="Mês anterior">&#8249;</button>
+                        <button type="button" data-calendar-next aria-label="Próximo mês">&#8250;</button>
+                    </div>
+                    <a href="{% url 'core:calendario' %}" class="calendar-link">Abrir</a>
+                </div>
+            </div>
+            <div class="mini-calendar" data-calendar="mini" aria-label="Calendário lateral"></div>
+            <div class="calendar-events" data-calendar-events></div>
+        </div>
+
+        <div class="dashboard-grid stats-grid">
+            <article class="card stat-card">
+                <span>Turmas</span>
+                <strong>{{ classrooms|length }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Perfil</span>
+                <strong>{{ request.user.role_label }}</strong>
+            </article>
+        </div>
+
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Próximas entregas</span>
+                    <h3 class="widget-title">Atividades</h3>
+                </div>
+            </div>
+            <div class="summary-list">
+                {% for assignment in upcoming_assignments %}
+                <div>
+                    <strong>{{ assignment.title }}</strong>
+                    <span class="muted-text">{{ assignment.classroom.name }} · {{ assignment.due_at|date:"d/m H:i" }}</span>
+                    <span class="muted-text">{% if assignment.is_closed %}Encerrada{% else %}Em aberto{% endif %}</span>
+                </div>
+                {% empty %}
+                <div>
+                    <strong>Sem atividades</strong>
+                    <span class="muted-text">Nenhuma atividade cadastrada.</span>
+                </div>
+                {% endfor %}
             </div>
         </div>
-    </header>
+    </aside>
+</section>
+{% endblock %}
 
-    <main class="app-container">
-        <aside class="sidebar-left">
-            <div class="card sidebar-menu">
-                <ul>
-                    <li><a href="feed.html" class="active"><span aria-hidden="true">🏠</span> Feed Geral</a></li>
-                    <li><a href="profile.html"><span aria-hidden="true">👤</span> Meu Perfil</a></li>
-                    <li><a href="turmas.html"><span aria-hidden="true">👥</span> Minhas Turmas</a></li>
-                    <li><a href="notas.html"><span aria-hidden="true">📊</span> Boletim & Notas</a></li>
-                    <li><a href="calendario.html"><span aria-hidden="true">📅</span> Calendario</a></li>
-                    <li><a href="administrador.html"><span aria-hidden="true">⚙️</span> Administrador</a></li>
-                </ul>
-            </div>
-        </aside>
-
-        <section class="feed-content app-main" id="feed-infinite-scroll">
-            <div class="card">
-                <div class="compose-row">
-                    <div class="avatar avatar-default" role="img" aria-label="Avatar padrao do usuario"></div>
-                    <input type="text" class="compose-input" placeholder="Compartilhe uma duvida ou material...">
-                </div>
-            </div>
-
-            <article class="card">
-                <div class="post-header">
-                    <div class="avatar avatar-brand">IA</div>
-                    <div class="user-info">
-                        <h4>Educas AI <span class="pill-highlight">Sugestao</span></h4>
-                        <span>Agora mesmo • Baseado na sua nota em Historia</span>
-                    </div>
-                </div>
-                <div class="post-content">
-                    <p>Ola, Thiallisson! Percebi que voce esta estudando a <strong>Revolucao Industrial</strong>. Aqui esta um resumo visual e um quiz rapido para ajudar na prova de sexta.</p>
-                </div>
-                <div class="post-actions">
-                    <button class="action-btn emoji-action" aria-label="Curtir" title="Curtir">❤️</button>
-                    <button class="action-btn emoji-action" aria-label="Comentar" title="Comentar">💬</button>
-                    <button class="action-btn emoji-action" aria-label="Salvar" title="Salvar">🔖</button>
-                </div>
-            </article>
-
-            <article class="card">
-                <div class="post-header">
-                    <div class="avatar avatar-default" role="img" aria-label="Avatar padrao do professor"></div>
-                    <div class="user-info">
-                        <h4>Prof. Roberto Santos</h4>
-                        <span>2 horas atras • Matematica 3o Ano B</span>
-                    </div>
-                </div>
-                <div class="post-content">
-                    <p>Pessoal, segue o gabarito comentado da lista de exercicios sobre Funcoes. Duvidas podem deixar nos comentarios!</p>
-                    <div class="attachment-chip">
-                        <span>PDF</span> Gabarito_Lista_03.pdf
-                    </div>
-                </div>
-                <div class="post-actions">
-                    <button class="action-btn emoji-action" aria-label="12 curtidas" title="12 curtidas">❤️ 12</button>
-                    <button class="action-btn emoji-action" aria-label="4 comentarios" title="4 comentarios">💬 4</button>
-                    <button class="action-btn emoji-action" aria-label="Salvar" title="Salvar">🔖</button>
-                </div>
-            </article>
-        </section>
-
-        <aside class="sidebar-right">
-            <div class="card calendar-card">
-                <div class="calendar-header">
-                    <div>
-                        <span class="calendar-eyebrow">Calendario</span>
-                        <h3 data-calendar-title>Maio 2026</h3>
-                    </div>
-                    <div class="calendar-actions">
-                        <div class="calendar-controls" aria-label="Controles do calendario">
-                            <button type="button" data-calendar-prev aria-label="Mes anterior">&#8249;</button>
-                            <button type="button" data-calendar-next aria-label="Proximo mes">&#8250;</button>
-                        </div>
-                        <a href="calendario.html" class="calendar-link" aria-label="Abrir calendario completo">Ver</a>
-                    </div>
-                </div>
-                <div class="mini-calendar" data-calendar="mini" aria-label="Calendario de Maio de 2026">
-                    <span class="weekday">Seg</span>
-                    <span class="weekday">Ter</span>
-                    <span class="weekday">Qua</span>
-                    <span class="weekday">Qui</span>
-                    <span class="weekday">Sex</span>
-                    <span class="weekday">Sab</span>
-                    <span class="weekday">Dom</span>
-                    <span class="muted-day">27</span>
-                    <span class="muted-day">28</span>
-                    <span class="muted-day">29</span>
-                    <span class="muted-day">30</span>
-                    <span>1</span>
-                    <span>2</span>
-                    <span>3</span>
-                    <span>4</span>
-                    <span>5</span>
-                    <span class="today">6</span>
-                    <span>7</span>
-                    <span class="event-day">8</span>
-                    <span>9</span>
-                    <span>10</span>
-                    <span>11</span>
-                    <span>12</span>
-                    <span>13</span>
-                    <span>14</span>
-                    <span class="event-day">15</span>
-                    <span>16</span>
-                    <span>17</span>
-                    <span>18</span>
-                    <span>19</span>
-                    <span>20</span>
-                    <span>21</span>
-                    <span>22</span>
-                    <span>23</span>
-                    <span>24</span>
-                    <span>25</span>
-                    <span>26</span>
-                    <span>27</span>
-                    <span>28</span>
-                    <span class="event-day">29</span>
-                    <span>30</span>
-                    <span>31</span>
-                </div>
-                <div class="calendar-events" data-calendar-events>
-                    <div>
-                        <strong>08 Mai</strong>
-                        <span>Simulado de Matematica</span>
-                    </div>
-                    <div>
-                        <strong>15 Mai</strong>
-                        <span>Entrega de Historia</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3 class="widget-title">Proximas Avaliacoes</h3>
-                <div class="notification-item">
-                    <div class="notification-icon">AV</div>
-                    <div>
-                        <strong>Matematica</strong><br>
-                        <span class="muted-text">28 Nov - Prova Bimestral</span>
-                    </div>
-                </div>
-                <div class="notification-item">
-                    <div class="notification-icon">AT</div>
-                    <div>
-                        <strong>Biologia</strong><br>
-                        <span class="muted-text">30 Nov - Entrega Trabalho</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3 class="widget-title">Ranking da Turma</h3>
-                <p class="widget-copy">Voce esta em <strong>5o lugar</strong> essa semana!</p>
-                <div class="progress-track">
-                    <div class="progress-fill" style="width: 70%;"></div>
-                </div>
-            </div>
-        </aside>
-    </main>
-
-    <script src="assets/js/script.js"></script>
-</body>
-</html>
+{% block app_scripts %}
+<script id="calendar-events-data" type="application/json">{{ calendar_events_json|safe }}</script>
+{% endblock %}

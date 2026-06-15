@@ -1,149 +1,150 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Boletim e Notas | Educas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body class="app-page">
-    <header class="main-header">
-        <div class="container header-container app-header">
-            <a href="feed.html" class="logo">
-                <img src="assets/img/logo.png" alt="Logo Educas">
-                Educas
-            </a>
-            <div class="header-actions">
-                <a href="profile.html" class="text-link">Meu Perfil</a>
-                <a href="login.html" class="btn btn-secondary btn-compact">Sair</a>
+{% extends "core/base_app.html" %}
+
+{% block title %}Notas | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading">
+    <span class="page-kicker">Boletim</span>
+    <h1>Notas e frequência</h1>
+    <p>Resumo compacto, gráfico no ponto e tabelas com scroll decente. Finalmente.</p>
+</div>
+
+{% if request.user.role != 'student' %}
+<div class="card">
+    <p>Esta área detalhada de boletim é focada no aluno. Professor e administrador usam os outros painéis.</p>
+</div>
+{% else %}
+<div class="dashboard-grid stats-grid stats-grid-wide">
+    <article class="card stat-card"><span>Média geral</span><strong>{{ overall_average|default:"-" }}</strong></article>
+    <article class="card stat-card"><span>Frequência</span><strong>{{ attendance.frequency|default:"-" }}%</strong></article>
+    <article class="card stat-card"><span>Faltas</span><strong>{{ attendance.absences|default:"0" }}</strong></article>
+</div>
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="card grade-chart-card">
+            <h3 class="widget-title">Rendimento por disciplina</h3>
+            <div class="grade-chart-wrap">
+                <canvas id="gradeChart" width="400" height="220"></canvas>
             </div>
         </div>
-    </header>
 
-    <main class="app-container">
-        <aside class="sidebar-left">
-            <div class="card sidebar-menu">
-                <ul>
-                    <li><a href="feed.html"><span aria-hidden="true">🏠</span> Feed Geral</a></li>
-                    <li><a href="profile.html"><span aria-hidden="true">👤</span> Meu Perfil</a></li>
-                    <li><a href="turmas.html"><span aria-hidden="true">👥</span> Minhas Turmas</a></li>
-                    <li><a href="notas.html" class="active"><span aria-hidden="true">📊</span> Boletim & Notas</a></li>
-                    <li><a href="calendario.html"><span aria-hidden="true">📅</span> Calendario</a></li>
-                    <li><a href="administrador.html"><span aria-hidden="true">⚙️</span> Administrador</a></li>
-                </ul>
+        <div class="card">
+            <h3 class="widget-title">Faltas por disciplina</h3>
+            <div class="table-wrap">
+                <table class="compact-table">
+                    <thead>
+                        <tr><th>Disciplina</th><th>Presente</th><th>Faltas</th><th>Justificadas</th><th>% Presença</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for subject, values in attendance_subjects.items %}
+                        <tr>
+                            <td>{{ subject }}</td>
+                            <td>{{ values.present }}</td>
+                            <td>{{ values.absent }}</td>
+                            <td>{{ values.excused }}</td>
+                            <td>{{ values.percentage }}%</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5">Nenhuma frequência registrada ainda.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        </aside>
+        </div>
 
-        <section class="app-main">
-            <div class="page-heading">
-                <span class="page-kicker">2o bimestre</span>
-                <h1>Boletim e Notas</h1>
-                <p>Veja medias, frequencia, avaliacoes pendentes e a situacao de cada disciplina.</p>
+        <div class="card">
+            <h3 class="widget-title">Notas por disciplina</h3>
+            <div class="table-wrap">
+                <table class="compact-table">
+                    <thead>
+                        <tr><th>Disciplina</th><th>Avaliações</th><th>Bimestres</th><th>Média</th><th>Situação</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for item in report %}
+                        <tr>
+                            <td>{{ item.subject }}</td>
+                            <td>{% for grade in item.grades %}{{ grade.assessment.assessment_type }}: {{ grade.score_display }}{% if not forloop.last %} | {% endif %}{% endfor %}</td>
+                            <td>{% for term, value in item.terms.items %}<div>{{ term }}: {{ value|default:'-' }}</div>{% empty %}<div>-</div>{% endfor %}</td>
+                            <td><strong>{{ item.average|default:'-' }}</strong></td>
+                            <td>{% if item.status == 'AP' %}<span class="status-pill approved">{{ item.status }}</span>{% elif item.status == 'RE' %}<span class="status-pill attention">{{ item.status }}</span>{% else %}<span class="status-pill muted">{{ item.status }}</span>{% endif %}</td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5">Nenhuma nota encontrada.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
+        </div>
+    </div>
 
-            <div class="dashboard-grid">
-                <div class="card metric-card">
-                    <span class="metric-label">Media Geral</span>
-                    <strong>8.5</strong>
-                    <span class="metric-status positive">Acima da meta</span>
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Resumo</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Perfil</strong>
+                    <span class="muted-text">{{ request.user.role_label }}</span>
                 </div>
-                <div class="card metric-card">
-                    <span class="metric-label">Frequencia</span>
-                    <strong>92%</strong>
-                    <span class="metric-status positive">Regular</span>
-                </div>
-                <div class="card metric-card">
-                    <span class="metric-label">Pendencias</span>
-                    <strong>2</strong>
-                    <span class="metric-status warning">Entregas abertas</span>
-                </div>
-            </div>
-
-            <div class="card">
-                <h3 class="widget-title">Notas por Disciplina</h3>
-                <div class="table-wrap">
-                    <table class="compact-table">
-                        <thead>
-                            <tr>
-                                <th>Disciplina</th>
-                                <th>AV1</th>
-                                <th>AV2</th>
-                                <th>Trabalho</th>
-                                <th>Media</th>
-                                <th>Situacao</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Matematica</td>
-                                <td>8.0</td>
-                                <td>9.0</td>
-                                <td>8.5</td>
-                                <td><strong>8.5</strong></td>
-                                <td><span class="status-pill approved">Aprovado</span></td>
-                            </tr>
-                            <tr>
-                                <td>Historia</td>
-                                <td>7.5</td>
-                                <td>8.0</td>
-                                <td>9.0</td>
-                                <td><strong>8.1</strong></td>
-                                <td><span class="status-pill approved">Aprovado</span></td>
-                            </tr>
-                            <tr>
-                                <td>Biologia</td>
-                                <td>6.8</td>
-                                <td>7.2</td>
-                                <td>8.0</td>
-                                <td><strong>7.3</strong></td>
-                                <td><span class="status-pill attention">Atencao</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                <div>
+                    <strong>Boletim</strong>
+                    <span class="muted-text">Disponível apenas ao próprio aluno</span>
                 </div>
             </div>
+        </div>
+    </aside>
+</section>
+{% endif %}
+{% endblock %}
 
-            <div class="card">
-                <h3 class="widget-title">Evolucao do Bimestre</h3>
-                <div class="grade-bars">
-                    <div>
-                        <span>Matematica</span>
-                        <div class="progress-track"><div class="progress-fill" style="width: 85%;"></div></div>
-                    </div>
-                    <div>
-                        <span>Historia</span>
-                        <div class="progress-track"><div class="progress-fill" style="width: 81%;"></div></div>
-                    </div>
-                    <div>
-                        <span>Biologia</span>
-                        <div class="progress-track"><div class="progress-fill" style="width: 73%;"></div></div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <aside class="sidebar-right">
-            <div class="card">
-                <h3 class="widget-title">Proximas Entregas</h3>
-                <div class="summary-list">
-                    <div>
-                        <strong>Trabalho de Historia</strong>
-                        <span class="muted-text">15 Mai - 23:59</span>
-                    </div>
-                    <div>
-                        <strong>Lista de Matematica</strong>
-                        <span class="muted-text">20 Mai - Aula</span>
-                    </div>
-                    <div>
-                        <strong>Relatorio de Biologia</strong>
-                        <span class="muted-text">29 Mai - Laboratorio</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
-    </main>
-
-    <script src="assets/js/script.js"></script>
-</body>
-</html>
+{% block app_scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.5.1/dist/chart.umd.min.js"></script>
+<script>
+    (function () {
+        const gradeChartData = {{ grade_chart_data|safe }};
+        if (gradeChartData && gradeChartData.length) {
+            const labels = gradeChartData.map(item => item.subject);
+            const studentAverages = gradeChartData.map(item => item.student_average);
+            const classAverages = gradeChartData.map(item => item.class_average);
+            const ctx = document.getElementById('gradeChart');
+            if (ctx) {
+                new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels,
+                        datasets: [
+                            {
+                                label: 'Média do aluno',
+                                data: studentAverages,
+                                backgroundColor: 'rgba(15, 91, 216, 0.75)',
+                                borderRadius: 8,
+                            },
+                            {
+                                label: 'Média da turma',
+                                data: classAverages,
+                                backgroundColor: 'rgba(15, 118, 110, 0.75)',
+                                borderRadius: 8,
+                            },
+                        ],
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 10,
+                            },
+                        },
+                        plugins: {
+                            legend: {
+                                position: 'top',
+                            },
+                        },
+                    },
+                });
+            }
+        }
+    }());
+</script>
+{% endblock %}

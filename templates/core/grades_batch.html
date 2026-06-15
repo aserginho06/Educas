@@ -1,0 +1,140 @@
+{% extends "core/base_app.html" %}
+
+{% block title %}Notas do Professor | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading">
+    <span class="page-kicker">Painel do professor</span>
+    <h1>Gestão de avaliações e notas</h1>
+    <p>Crie avaliação, lance notas e revise o histórico com a mesma casca visual do resto do sistema. Sem navbar repetida enchendo o saco.</p>
+</div>
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="dashboard-grid stats-grid stats-grid-wide">
+            <article class="card stat-card"><span>Avaliações</span><strong>{{ assessments|length }}</strong></article>
+            <article class="card stat-card"><span>Alunos</span><strong>{{ student_list|length }}</strong></article>
+            <article class="card stat-card"><span>Modo</span><strong>{% if is_editing %}Edição{% elif selected_assessment %}Lançamento{% else %}Criação{% endif %}</strong></article>
+        </div>
+
+        <div class="card">
+            <h3 class="widget-title">Minhas avaliações</h3>
+            <div class="table-wrap">
+                <table class="compact-table">
+                    <thead>
+                        <tr><th>Tipo</th><th>Disciplina</th><th>Turma</th><th>Data</th><th>Descrição</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for assessment in assessments %}
+                        <tr>
+                            <td>{{ assessment.get_assessment_type_display }}</td>
+                            <td>{{ assessment.subject.name }}</td>
+                            <td>{{ assessment.classroom.name }}</td>
+                            <td>{{ assessment.date|date:'d/m/Y' }}</td>
+                            <td>{{ assessment.description|truncatechars:50 }}</td>
+                            <td>
+                                <a href="?assessment_id={{ assessment.id }}" class="text-link">Lançar notas</a>
+                                <a href="?edit_assessment_id={{ assessment.id }}" class="text-link">Editar</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="6">Nenhuma avaliação cadastrada ainda.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="widget-title">{% if is_editing %}Editar avaliação{% else %}Nova avaliação{% endif %}</h3>
+            <form method="post" class="dashboard-grid">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="{% if is_editing %}edit_assessment{% else %}create_assessment{% endif %}">
+                <div class="form-group">
+                    <label for="{{ assessment_form.classroom.id_for_label }}">Turma</label>
+                    {{ assessment_form.classroom }}
+                    {{ assessment_form.classroom.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ assessment_form.subject.id_for_label }}">Disciplina</label>
+                    {{ assessment_form.subject }}
+                    {{ assessment_form.subject.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ assessment_form.assessment_type.id_for_label }}">Tipo</label>
+                    {{ assessment_form.assessment_type }}
+                    {{ assessment_form.assessment_type.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ assessment_form.date.id_for_label }}">Data</label>
+                    {{ assessment_form.date }}
+                    {{ assessment_form.date.errors }}
+                </div>
+                <div class="form-group form-field-full">
+                    <label for="{{ assessment_form.description.id_for_label }}">Descrição</label>
+                    {{ assessment_form.description }}
+                    {{ assessment_form.description.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ assessment_form.quantidade_aulas.id_for_label }}">Quantidade de aulas</label>
+                    {{ assessment_form.quantidade_aulas }}
+                    {{ assessment_form.quantidade_aulas.errors }}
+                </div>
+                {% if assessment_form.non_field_errors %}
+                <div class="form-error form-field-full">{{ assessment_form.non_field_errors }}</div>
+                {% endif %}
+                <div class="form-actions form-field-full">
+                    <button type="submit" class="btn btn-primary">{% if is_editing %}Atualizar avaliação{% else %}Criar avaliação{% endif %}</button>
+                </div>
+            </form>
+        </div>
+
+        {% if selected_assessment %}
+        <div class="card">
+            <h3 class="widget-title">Lançar notas: {{ selected_assessment.get_assessment_type_display }} · {{ selected_assessment.subject.name }}</h3>
+            <p class="muted-text">{{ selected_assessment.classroom.name }} · {{ selected_assessment.date|date:'d/m/Y' }} · {{ selected_assessment.description }}</p>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="save_grades">
+                <input type="hidden" name="assessment_id" value="{{ selected_assessment.id }}">
+                <div class="table-wrap">
+                    <table class="compact-table">
+                        <thead>
+                            <tr><th>Matrícula</th><th>Aluno</th><th>Nota</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for enrollment in student_list %}
+                            <tr>
+                                <td>{{ enrollment.student.id }}</td>
+                                <td>{{ enrollment.student.full_name|default:enrollment.student.email }}</td>
+                                <td><input type="text" name="score_{{ enrollment.student.id }}" value="{{ enrollment.entry_score }}" placeholder="0.00"></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Salvar notas</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Resumo rápido</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Permissão</strong>
+                    <span class="muted-text">Professor só visualiza suas turmas e disciplinas.</span>
+                </div>
+                <div>
+                    <strong>Fluxo</strong>
+                    <span class="muted-text">Criar avaliação, lançar notas e salvar em lote.</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+{% endblock %}

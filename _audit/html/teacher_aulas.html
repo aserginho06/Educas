@@ -1,0 +1,270 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aulas | Educas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/css/style.css">
+</head>
+<body class="app-page shell-page">
+    <div class="app-shell">
+        
+<aside class="app-sidebar" data-app-sidebar>
+    <div class="app-sidebar-top">
+        <a href="http://local.invalid/feed.html" class="logo app-sidebar-logo">
+            <img src="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/img/logo.png" alt="Logo Educas">
+            <span>
+                Educas
+                <small>Campus digital</small>
+            </span>
+        </a>
+
+        <div class="app-user-chip">
+            <strong>Paula Demo</strong>
+            <span>Professor</span>
+        </div>
+    </div>
+
+    <nav class="app-sidebar-nav" aria-label="Navegação principal">
+        
+        <a href="http://local.invalid/professor.html" class="">
+            <span class="nav-icon nav-icon-grid"></span>
+            <span>Dashboard</span>
+        </a>
+        <a href="http://local.invalid/feed.html" class="">
+            <span class="nav-icon nav-icon-feed"></span>
+            <span>Feed</span>
+        </a>
+        <a href="http://local.invalid/turmas.html" class="">
+            <span class="nav-icon nav-icon-classroom"></span>
+            <span>Turmas</span>
+        </a>
+        
+        <a href="http://local.invalid/aulas.html" class="active">
+            <span class="nav-icon nav-icon-lesson"></span>
+            <span>Aulas</span>
+        </a>
+        <a href="http://local.invalid/attendance.html" class="">
+            <span class="nav-icon nav-icon-attendance"></span>
+            <span>Frequência</span>
+        </a>
+        <a href="http://local.invalid/grades_batch.html" class="">
+            <span class="nav-icon nav-icon-grade"></span>
+            <span>Notas</span>
+        </a>
+        
+        
+        <a href="http://local.invalid/professor/atividades.html" class="">
+            <span class="nav-icon nav-icon-activity"></span>
+            <span>Atividades</span>
+        </a>
+        
+        <a href="http://local.invalid/calendario.html" class="">
+            <span class="nav-icon nav-icon-calendar"></span>
+            <span>Calendário</span>
+        </a>
+        <a href="http://local.invalid/notificacoes.html" class="">
+            <span class="nav-icon nav-icon-notification"></span>
+            <span>Notificações</span>
+        </a>
+        <a href="http://local.invalid/profile.html" class="">
+            <span class="nav-icon nav-icon-profile"></span>
+            <span>Perfil</span>
+        </a>
+        <a href="http://local.invalid/profile.html">
+            <span class="nav-icon nav-icon-settings"></span>
+            <span>Configurações</span>
+        </a>
+        
+    </nav>
+
+    <div class="app-sidebar-bottom">
+        
+
+        <a href="http://local.invalid/logout/" class="app-logout-link">
+            <span class="nav-icon nav-icon-logout"></span>
+            <span>Sair</span>
+        </a>
+    </div>
+</aside>
+
+
+        <div class="app-shell-body">
+            <header class="app-mobile-header">
+                <button class="app-shell-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" data-sidebar-toggle>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <a href="http://local.invalid/feed.html" class="logo app-mobile-logo">
+                    <img src="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/img/logo.png" alt="Logo Educas">
+                    Educas
+                </a>
+                <a href="http://local.invalid/profile.html" class="app-mobile-user">Paula</a>
+            </header>
+
+            <main class="app-shell-main">
+                
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Operação acadêmica</span>
+        <h1>Registro de aulas</h1>
+        <p>Formulário compacto, histórico útil e filtros rápidos. Do jeito que isso já devia estar.</p>
+    </div>
+    <a href="http://local.invalid/professor.html" class="btn btn-secondary btn-compact">Voltar ao painel</a>
+</div>
+
+
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Novo registro</span>
+                    <h2>Nova aula</h2>
+                </div>
+                
+            </div>
+
+            <form method="post">
+                <input type="hidden" name="csrfmiddlewaretoken" value="VTD2aw4ngob2bVzLoCxFRbK69FJL9BNG1ICCmt4R8kiwrAPsiPzQ2ZhtWNfHhGeE">
+                <div class="dashboard-grid">
+                    <div class="form-field">
+                        <label for="id_lesson-classroom">Turma</label>
+                        <select name="lesson-classroom" required id="id_lesson-classroom">
+  <option value="" selected>---------</option>
+
+  <option value="1">2EM-TESTE A - 2026</option>
+
+</select>
+                        
+                    </div>
+                    <div class="form-field">
+                        <label for="id_lesson-subject">Disciplina</label>
+                        <select name="lesson-subject" required id="id_lesson-subject">
+  <option value="" selected>---------</option>
+
+  <option value="1">MATDEMO - Matematica Demo</option>
+
+</select>
+                        
+                    </div>
+                    <div class="form-field">
+                        <label for="id_lesson-date">Data</label>
+                        <input type="date" name="lesson-date" required id="id_lesson-date">
+                        
+                    </div>
+                    <div class="form-field">
+                        <label for="id_lesson-quantidade_aulas">Quantidade de aulas</label>
+                        <input type="number" name="lesson-quantidade_aulas" value="1" min="0" max="6" required id="id_lesson-quantidade_aulas">
+                        
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label for="id_lesson-conteudo">Conteúdo ministrado</label>
+                        <textarea name="lesson-conteudo" cols="40" rows="4" required id="id_lesson-conteudo">
+</textarea>
+                        
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label for="id_lesson-atividade">Atividade realizada</label>
+                        <textarea name="lesson-atividade" cols="40" rows="3" id="id_lesson-atividade">
+</textarea>
+                        
+                    </div>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Salvar aula</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Filtro rápido</span>
+                    <h2>Buscar registros</h2>
+                </div>
+            </div>
+            <form method="get" class="dashboard-grid dashboard-grid-tight">
+                <div class="form-field">
+                    <label for="filter-classroom">Turma</label>
+                    <select id="filter-classroom" name="classroom">
+                        <option value="">Todas as turmas</option>
+                        
+                        <option value="1" >2EM-TESTE</option>
+                        
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="filter-date">Data</label>
+                    <input type="date" id="filter-date" name="date" value="">
+                </div>
+                <div class="form-field form-field-actions">
+                    <button type="submit" class="btn btn-primary">Aplicar filtro</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Histórico</span>
+                    <h2>Aulas registradas</h2>
+                </div>
+                <span class="section-counter">0 item(ns)</span>
+            </div>
+            <div class="lesson-history-grid">
+                
+                <div class="empty-state">
+                    <strong>Nenhuma aula cadastrada.</strong>
+                    <p>Use o formulário acima para registrar sua primeira aula.</p>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="dashboard-grid stats-grid">
+            <article class="card stat-card">
+                <span>Turmas ativas</span>
+                <strong>1</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Registros</span>
+                <strong>0</strong>
+            </article>
+        </div>
+
+        <div class="card">
+            <h3 class="widget-title">Como usar melhor</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Preencha conteúdo e atividade</strong>
+                    <span class="muted-text">Isso alimenta frequência, histórico e consulta futura.</span>
+                </div>
+                <div>
+                    <strong>Filtre por data</strong>
+                    <span class="muted-text">Evita caça cega em lista longa.</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+
+            </main>
+        </div>
+    </div>
+
+    <div class="app-shell-overlay" data-sidebar-overlay></div>
+
+    
+    <script src="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/js/script.js"></script>
+</body>
+</html>

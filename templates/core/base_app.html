@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Educas{% endblock %}</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="app-page shell-page">
+    <div class="app-shell">
+        {% include "core/includes/app_sidebar.html" %}
+
+        <div class="app-shell-body">
+            <header class="app-mobile-header">
+                <button class="app-shell-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" data-sidebar-toggle>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <a href="{% url 'core:feed' %}" class="logo app-mobile-logo">
+                    <img src="{% static 'img/logo.png' %}" alt="Logo Educas">
+                    Educas
+                </a>
+                <a href="{% url 'core:perfil' %}" class="app-mobile-user">{{ request.user.first_name|default:request.user.role_label }}</a>
+            </header>
+
+            <main class="app-shell-main">
+                {% block app_content %}{% endblock %}
+            </main>
+        </div>
+    </div>
+
+    <div class="app-shell-overlay" data-sidebar-overlay></div>
+
+    {% block app_scripts %}{% endblock %}
+    <script src="{% static 'js/script.js' %}"></script>
+</body>
+</html>

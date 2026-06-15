@@ -1,130 +1,153 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Meu Perfil | Educas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body class="app-page">
+{% extends "core/base_app.html" %}
 
-    <header class="main-header">
-        <div class="container header-container app-header">
-            <a href="feed.html" class="logo">
-                <img src="assets/img/logo.png" alt="Logo Educas">
-                Educas
-            </a>
-            <div class="header-actions">
-                <a href="feed.html" class="text-link">Feed</a>
-                <a href="login.html" class="btn btn-secondary btn-compact">Sair</a>
+{% block title %}Perfil | Educas{% endblock %}
+
+{% block app_content %}
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="card card-no-padding card-overflow-hidden">
+            <div class="profile-cover"></div>
+            <div class="profile-header-content">
+                {% if request.user.avatar_url %}
+                <img src="{{ request.user.avatar_url }}" alt="Foto de perfil" class="profile-avatar">
+                {% else %}
+                <div class="profile-avatar avatar-default" role="img" aria-label="Avatar padrão do usuário"></div>
+                {% endif %}
+                <div class="profile-info">
+                    <h1>{{ request.user.full_name|default:request.user.email }}</h1>
+                    <div class="profile-meta">
+                        <span class="profile-badge">{{ request.user.role_label }}</span>
+                        {% if request.user.role == 'student' and request.user.enrollments.first %}
+                        <span class="profile-badge">{{ request.user.enrollments.first.classroom.name }}</span>
+                        {% endif %}
+                        <span class="muted-text">{{ request.user.email }}</span>
+                    </div>
+                </div>
             </div>
         </div>
-    </header>
 
-    <main class="app-container">
-        <aside class="sidebar-left">
-            <div class="card sidebar-menu">
-                <ul>
-                    <li><a href="feed.html"><span aria-hidden="true">🏠</span> Feed Geral</a></li>
-                    <li><a href="profile.html" class="active"><span aria-hidden="true">👤</span> Meu Perfil</a></li>
-                    <li><a href="turmas.html"><span aria-hidden="true">👥</span> Minhas Turmas</a></li>
-                    <li><a href="notas.html"><span aria-hidden="true">📊</span> Boletim & Notas</a></li>
-                    <li><a href="calendario.html"><span aria-hidden="true">📅</span> Calendario</a></li>
-                    <li><a href="administrador.html"><span aria-hidden="true">⚙️</span> Administrador</a></li>
+        {% if messages %}
+        <div class="card app-alert-stack">
+            {% for message in messages %}
+            <p>{{ message }}</p>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3 class="widget-title">Dados atuais</h3>
+                <ul class="profile-list">
+                    <li><strong>Email:</strong> {{ request.user.email }}</li>
+                    <li><strong>Cargo:</strong> {{ request.user.role_label }}</li>
+                    <li><strong>Telefone:</strong> {{ request.user.profile.phone|default:"-" }}</li>
+                    {% if request.user.role == 'student' and request.user.student_profile %}
+                    <li><strong>Matrícula:</strong> {{ request.user.student_profile.registration_code }}</li>
+                    <li><strong>Responsável:</strong> {{ request.user.student_profile.guardian_name|default:"-" }}</li>
+                    {% endif %}
+                    {% if request.user.role == 'teacher' and request.user.teacher_profile %}
+                    <li><strong>Código do professor:</strong> {{ request.user.teacher_profile.employee_code }}</li>
+                    <li><strong>Especialidade:</strong> {{ request.user.teacher_profile.expertise|default:"-" }}</li>
+                    {% endif %}
                 </ul>
             </div>
-        </aside>
 
-        <section class="profile-page app-main">
-            <div class="card card-no-padding card-overflow-hidden">
-                <div class="profile-cover"></div>
-                <div class="profile-header-content">
-                    <div class="profile-avatar avatar-default" role="img" aria-label="Avatar padrao do usuario"></div>
-                    <div class="profile-info">
-                        <h1>Thiallisson Oliveira</h1>
-                        <div class="profile-meta">
-                            <span class="profile-badge">Aluno</span>
-                            <span class="profile-badge">3o Ano B</span>
-                            <span class="muted-text">Teresina, PI</span>
-                        </div>
-                    </div>
-                    <div class="profile-action">
-                        <button class="btn btn-primary">Editar Perfil</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="profile-grid">
-                <div class="card">
-                    <h3 class="widget-title">Desempenho Geral</h3>
-                    <div class="stats-row">
-                        <div>
-                            <div class="stat-number primary">8.5</div>
-                            <span class="muted-text">Media Geral</span>
-                        </div>
-                        <div>
-                            <div class="stat-number secondary">92%</div>
-                            <span class="muted-text">Frequencia</span>
-                        </div>
-                        <div>
-                            <div class="stat-number danger">2</div>
-                            <span class="muted-text">Faltas</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <h3 class="widget-title">Sobre</h3>
-                    <ul class="profile-list">
-                        <li><strong>Email:</strong> thiallisson@educas.com</li>
-                        <li><strong>Matricula:</strong> 202500123</li>
-                        <li><strong>Data de Nascimento:</strong> 15/05/2005</li>
-                        <li><strong>Responsavel:</strong> Maria Oliveira</li>
-                    </ul>
-                </div>
-
-                <div class="card profile-wide-card">
-                    <h3 class="widget-title">Atividades Recentes</h3>
-                    <div class="activity-list">
-                        <div class="activity-item">
-                            <span>Enviou trabalho de <strong>Historia</strong></span>
-                            <span class="muted-text">Ontem</span>
-                        </div>
-                        <div class="activity-item">
-                            <span>Recebeu nota em <strong>Matematica</strong> (9.0)</span>
-                            <span class="muted-text">24 Nov</span>
-                        </div>
-                        <div class="activity-item">
-                            <span>Comentou no post de <strong>Prof. Roberto</strong></span>
-                            <span class="muted-text">23 Nov</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <aside class="sidebar-right">
             <div class="card">
-                <h3 class="widget-title">Resumo</h3>
-                <div class="summary-list">
-                    <div>
-                        <strong>Proxima aula</strong>
-                        <span class="muted-text">Matematica - 08:00</span>
+                <h3 class="widget-title">Editar perfil</h3>
+                <form method="post" enctype="multipart/form-data" class="dashboard-grid">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        <label for="{{ form.first_name.id_for_label }}">Nome</label>
+                        {{ form.first_name }}
                     </div>
-                    <div>
-                        <strong>Pontos Educas</strong>
-                        <span class="muted-text">1.240 pontos</span>
+                    <div class="form-group">
+                        <label for="{{ form.last_name.id_for_label }}">Sobrenome</label>
+                        {{ form.last_name }}
                     </div>
-                    <div>
-                        <strong>Meta semanal</strong>
-                        <span class="muted-text">3 de 5 atividades</span>
+                    <div class="form-group">
+                        <label for="{{ form.email.id_for_label }}">E-mail</label>
+                        {{ form.email }}
                     </div>
+                    <div class="form-group">
+                        <label for="{{ form.phone.id_for_label }}">Telefone</label>
+                        {{ form.phone }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.birth_date.id_for_label }}">Nascimento</label>
+                        {{ form.birth_date }}
+                    </div>
+                    <div class="form-group file-upload-field" data-file-upload>
+                        <label for="{{ form.avatar.id_for_label }}">Foto</label>
+                        <div class="file-upload-box">
+                            {{ form.avatar }}
+                            <div class="file-upload-copy">
+                                <strong>Atualize sua foto</strong>
+                                <span data-file-upload-text>Nenhum arquivo selecionado</span>
+                            </div>
+                        </div>
+                    </div>
+                    {% if request.user.role == 'student' %}
+                    <div class="form-group">
+                        <label for="{{ form.guardian_name.id_for_label }}">Responsável</label>
+                        {{ form.guardian_name }}
+                    </div>
+                    <div class="form-group">
+                        <label for="{{ form.guardian_phone.id_for_label }}">Telefone do responsável</label>
+                        {{ form.guardian_phone }}
+                    </div>
+                    {% endif %}
+                    {% if request.user.role == 'teacher' %}
+                    <div class="form-group form-field-full">
+                        <label for="{{ form.expertise.id_for_label }}">Especialidade</label>
+                        {{ form.expertise }}
+                    </div>
+                    {% endif %}
+                    <div class="form-group form-field-full">
+                        <label for="{{ form.bio.id_for_label }}">Bio</label>
+                        {{ form.bio }}
+                    </div>
+                    <div class="form-actions form-field-full">
+                        <button class="btn btn-primary" type="submit">Salvar perfil</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Resumo</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Papel</strong>
+                    <span class="muted-text">{{ request.user.role_label }}</span>
+                </div>
+                <div>
+                    <strong>Conta verificada</strong>
+                    <span class="muted-text">{% if request.user.is_verified %}Sim{% else %}Não{% endif %}</span>
                 </div>
             </div>
-        </aside>
-    </main>
+        </div>
 
-    <script src="assets/js/script.js"></script>
-</body>
-</html>
+        {% if request.user.role == 'student' %}
+        <div class="card">
+            <h3 class="widget-title">Resumo acadêmico</h3>
+            <div class="stats-row">
+                <div>
+                    <div class="stat-number primary">{{ average|default:"-" }}</div>
+                    <span class="muted-text">Média geral</span>
+                </div>
+                <div>
+                    <div class="stat-number secondary">{{ attendance.frequency|default:"-" }}%</div>
+                    <span class="muted-text">Frequência</span>
+                </div>
+                <div>
+                    <div class="stat-number danger">{{ attendance.absences|default:"0" }}</div>
+                    <span class="muted-text">Faltas</span>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </aside>
+</section>
+{% endblock %}

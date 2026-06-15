@@ -1,0 +1,259 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Turmas | Educas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/css/style.css">
+</head>
+<body class="app-page shell-page">
+    <div class="app-shell">
+        
+<aside class="app-sidebar" data-app-sidebar>
+    <div class="app-sidebar-top">
+        <a href="http://local.invalid/feed.html" class="logo app-sidebar-logo">
+            <img src="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/img/logo.png" alt="Logo Educas">
+            <span>
+                Educas
+                <small>Campus digital</small>
+            </span>
+        </a>
+
+        <div class="app-user-chip">
+            <strong>Administrador Educas</strong>
+            <span>Administrador</span>
+        </div>
+    </div>
+
+    <nav class="app-sidebar-nav" aria-label="Navegação principal">
+        
+        <a href="http://local.invalid/administrador/" class="">
+            <span class="nav-icon nav-icon-grid"></span>
+            <span>Dashboard</span>
+        </a>
+        <a href="http://local.invalid/feed.html" class="">
+            <span class="nav-icon nav-icon-feed"></span>
+            <span>Feed</span>
+        </a>
+        <a href="http://local.invalid/turmas.html" class="active">
+            <span class="nav-icon nav-icon-classroom"></span>
+            <span>Turmas</span>
+        </a>
+        
+        <a href="http://local.invalid/aulas.html" class="">
+            <span class="nav-icon nav-icon-lesson"></span>
+            <span>Aulas</span>
+        </a>
+        <a href="http://local.invalid/attendance.html" class="">
+            <span class="nav-icon nav-icon-attendance"></span>
+            <span>Frequência</span>
+        </a>
+        <a href="http://local.invalid/grades_batch.html" class="">
+            <span class="nav-icon nav-icon-grade"></span>
+            <span>Notas</span>
+        </a>
+        
+        
+        <a href="http://local.invalid/atividades.html" class="">
+            <span class="nav-icon nav-icon-activity"></span>
+            <span>Atividades</span>
+        </a>
+        
+        <a href="http://local.invalid/calendario.html" class="">
+            <span class="nav-icon nav-icon-calendar"></span>
+            <span>Calendário</span>
+        </a>
+        <a href="http://local.invalid/notificacoes.html" class="">
+            <span class="nav-icon nav-icon-notification"></span>
+            <span>Notificações</span>
+        </a>
+        <a href="http://local.invalid/profile.html" class="">
+            <span class="nav-icon nav-icon-profile"></span>
+            <span>Perfil</span>
+        </a>
+        <a href="http://local.invalid/profile.html">
+            <span class="nav-icon nav-icon-settings"></span>
+            <span>Configurações</span>
+        </a>
+        
+    </nav>
+
+    <div class="app-sidebar-bottom">
+        
+
+        <a href="http://local.invalid/logout/" class="app-logout-link">
+            <span class="nav-icon nav-icon-logout"></span>
+            <span>Sair</span>
+        </a>
+    </div>
+</aside>
+
+
+        <div class="app-shell-body">
+            <header class="app-mobile-header">
+                <button class="app-shell-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" data-sidebar-toggle>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <a href="http://local.invalid/feed.html" class="logo app-mobile-logo">
+                    <img src="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/img/logo.png" alt="Logo Educas">
+                    Educas
+                </a>
+                <a href="http://local.invalid/profile.html" class="app-mobile-user">Administrador</a>
+            </header>
+
+            <main class="app-shell-main">
+                
+<div class="page-heading">
+    <span class="page-kicker">Estrutura acadêmica</span>
+    <h1>Minhas turmas</h1>
+    <p>Cards menores, mais densos e cronograma fora do miolo. O espaço agora trabalha em vez de enfeitar.</p>
+</div>
+
+
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Nova turma</span>
+                    <h2>Criar turma</h2>
+                </div>
+            </div>
+            <form method="post" class="dashboard-grid">
+                <input type="hidden" name="csrfmiddlewaretoken" value="1hE5zfBRBoTudN9Qw6NbyIwMFajIDgFK4VH39GXk9UDNDKTzRe75di2OROizktrs">
+                <input type="hidden" name="action" value="create_classroom">
+                <div class="form-group">
+                    <label for="id_create-name">Nome</label>
+                    <input type="text" name="create-name" placeholder="Ex.: 2EM-A" maxlength="120" required id="id_create-name">
+                    
+                </div>
+                <div class="form-group">
+                    <label for="id_create-academic_year">Ano letivo</label>
+                    <select name="create-academic_year" id="id_create-academic_year">
+  <option value="" selected>---------</option>
+
+  <option value="2">2027</option>
+
+  <option value="1">2026</option>
+
+</select>
+                    
+                </div>
+                <div class="form-group">
+                    <label for="id_create-grade_level">Série/Período</label>
+                    <select name="create-grade_level" id="id_create-grade_level">
+  <option value="" selected>---------</option>
+
+  <option value="1">1o Ano</option>
+
+  <option value="2">2o Ano</option>
+
+  <option value="3">3o Ano</option>
+
+  <option value="4">4o Ano</option>
+
+  <option value="5">5o Ano</option>
+
+  <option value="6">6o Ano</option>
+
+  <option value="7">7o Ano</option>
+
+  <option value="8">8o Ano</option>
+
+  <option value="9">9o Ano</option>
+
+  <option value="10">1o Ano EM</option>
+
+  <option value="11">2o Ano EM</option>
+
+  <option value="12">3o Ano EM</option>
+
+</select>
+                    
+                </div>
+                <div class="form-group">
+                    <label for="id_create-shift">Turno</label>
+                    <select name="create-shift" id="id_create-shift">
+  <option value="morning" selected>Manha</option>
+
+  <option value="afternoon">Tarde</option>
+
+  <option value="evening">Noite</option>
+
+  <option value="full_time">Integral</option>
+
+</select>
+                    
+                </div>
+                <div class="form-group">
+                    <label for="id_create-section">Identificador</label>
+                    <input type="text" name="create-section" placeholder="Ex.: A" maxlength="20" id="id_create-section">
+                    
+                </div>
+                <div class="form-actions form-field-full">
+                    <button type="submit" class="btn btn-primary">Criar turma</button>
+                </div>
+            </form>
+        </div>
+        
+
+        <div class="assignment-card-grid assignment-card-grid-student">
+            
+            <article class="card class-summary-card">
+                <div class="assignment-overview-top">
+                    <div>
+                        <span class="page-kicker">2EM-TESTE</span>
+                        <h3>2o Ano EM · A</h3>
+                    </div>
+                    <span class="status-pill approved">Manha</span>
+                </div>
+                <div class="assignment-overview-meta">
+                    <span>2026</span>
+                    <span>Paula Demo</span>
+                </div>
+                <div class="class-summary-grid">
+                    <div class="class-summary-item"><strong>1</strong><span>alunos</span></div>
+                    <div class="class-summary-item"><strong>1</strong><span>disciplinas</span></div>
+                    <div class="class-summary-item"><strong>1</strong><span>professores</span></div>
+                    <div class="class-summary-item"><strong>2026</strong><span>ano letivo</span></div>
+                </div>
+                <div class="card-actions">
+                    <a href="http://local.invalid/turmas/1/cronograma.html" class="btn btn-primary btn-compact">Ver cronograma</a>
+                </div>
+            </article>
+            
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="dashboard-grid stats-grid">
+            <article class="card stat-card">
+                <span>Total de turmas</span>
+                <strong>1</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Perfil</span>
+                <strong>Administrador</strong>
+            </article>
+        </div>
+    </aside>
+</section>
+
+            </main>
+        </div>
+    </div>
+
+    <div class="app-shell-overlay" data-sidebar-overlay></div>
+
+    
+    <script src="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/js/script.js"></script>
+</body>
+</html>

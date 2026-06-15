@@ -1,0 +1,164 @@
+{% extends "core/base_app.html" %}
+
+{% block title %}Painel do Aluno | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading">
+    <span class="page-kicker">Painel do aluno</span>
+    <h1>Visão geral acadêmica</h1>
+    <p>O resumo ficou compacto e útil. Agora dá para bater o olho e entender a vida escolar sem descer a página inteira.</p>
+</div>
+
+<div class="dashboard-grid stats-grid stats-grid-wide">
+    <article class="card stat-card">
+        <span>Média geral</span>
+        <strong>{{ overall_average|default:"-" }}</strong>
+    </article>
+    <article class="card stat-card">
+        <span>Frequência</span>
+        <strong>{{ attendance.frequency|default:"-" }}%</strong>
+    </article>
+    <article class="card stat-card">
+        <span>Turmas</span>
+        <strong>{{ classrooms|length }}</strong>
+    </article>
+    <article class="card stat-card">
+        <span>Atividades</span>
+        <strong>{{ assignments|length }}</strong>
+    </article>
+</div>
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3 class="widget-title">Hoje</h3>
+                <div class="summary-list">
+                    {% for item in today_schedule %}
+                    <div>
+                        {% if item.entry_type == 'break' %}
+                        <strong>Intervalo</strong>
+                        {% else %}
+                        <strong>{{ item.starts_at }} - {{ item.ends_at }}</strong>
+                        <span class="muted-text">{{ item.subject.name }} · {{ item.teacher.full_name|default:item.teacher.email }}</span>
+                        {% endif %}
+                    </div>
+                    {% empty %}
+                    <div>
+                        <strong>Sem aulas hoje</strong>
+                        <span class="muted-text">Nada programado para {{ today_label }}.</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="widget-title">Notificações</h3>
+                <div class="summary-list">
+                    {% for notification in notifications %}
+                    <div>
+                        <strong>{{ notification.get_notification_type_display }}</strong>
+                        <span class="muted-text">{{ notification.message }}</span>
+                    </div>
+                    {% empty %}
+                    <div>
+                        <strong>Sem alertas</strong>
+                        <span class="muted-text">Seu painel está em dia.</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Prazos</span>
+                    <h2>Atividades e entregas</h2>
+                </div>
+            </div>
+            <div class="assignment-card-grid assignment-card-grid-student">
+                {% for assignment in assignments %}
+                <article class="assignment-overview-card">
+                    <div class="assignment-overview-top">
+                        <div>
+                            <span class="page-kicker">{{ assignment.subject.name }}</span>
+                            <h3>{{ assignment.title }}</h3>
+                        </div>
+                        {% if assignment.is_closed %}
+                        <span class="status-pill attention">Encerrada</span>
+                        {% else %}
+                        <span class="status-pill approved">Em aberto</span>
+                        {% endif %}
+                    </div>
+                    <div class="assignment-overview-meta">
+                        <span>{{ assignment.classroom.name }}</span>
+                        <span>{{ assignment.due_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                </article>
+                {% empty %}
+                <div class="empty-state">
+                    <strong>Nenhuma atividade encontrada.</strong>
+                    <p>Quando aparecer tarefa nova, ela cai aqui sem desperdiçar espaço.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3 class="widget-title">Boletim resumido</h3>
+                <div class="summary-list">
+                    {% for item in report %}
+                    <div>
+                        <strong>{{ item.subject }}</strong>
+                        <span class="muted-text">Média {{ item.average }} · {{ item.status }}</span>
+                    </div>
+                    {% empty %}
+                    <div>
+                        <strong>Sem notas</strong>
+                        <span class="muted-text">O professor ainda não lançou as avaliações.</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="widget-title">Frequência por disciplina</h3>
+                <div class="summary-list">
+                    {% for subject, values in attendance_subjects.items %}
+                    <div>
+                        <strong>{{ subject }}</strong>
+                        <span class="muted-text">{{ values.percentage }}% de presença · {{ values.absent }} falta(s)</span>
+                    </div>
+                    {% empty %}
+                    <div>
+                        <strong>Sem frequência</strong>
+                        <span class="muted-text">Ainda não há registros para mostrar.</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Próximos eventos</h3>
+            <div class="summary-list">
+                {% for event in events %}
+                <div>
+                    <strong>{{ event.title }}</strong>
+                    <span class="muted-text">{{ event.starts_at|date:"d/m H:i" }}{% if event.classroom %} · {{ event.classroom.name }}{% endif %}</span>
+                </div>
+                {% empty %}
+                <div>
+                    <strong>Sem eventos</strong>
+                    <span class="muted-text">Nenhum evento acadêmico publicado.</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </aside>
+</section>
+{% endblock %}

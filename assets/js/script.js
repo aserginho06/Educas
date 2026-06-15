@@ -1,55 +1,110 @@
-document.addEventListener('DOMContentLoaded', () => {
-    const themeBtn = document.createElement('button');
-    themeBtn.className = 'theme-toggle-btn';
-    themeBtn.textContent = '\u{1F319}';
-    themeBtn.title = 'Alternar tema';
-    themeBtn.setAttribute('aria-label', 'Alternar tema escuro');
-    document.body.appendChild(themeBtn);
+function initializeApp() {
+    setupThemeToggle();
+    setupAppShell();
+    setupResponsiveMenu();
+    setupSidebarCalendar();
+    setupFeedInteractions();
+    setupFileUploads();
+}
 
-    if (localStorage.getItem('theme') === 'dark') {
-        document.body.classList.add('dark-mode');
-        themeBtn.textContent = '\u2600\uFE0F';
-        themeBtn.setAttribute('aria-label', 'Alternar tema claro');
+function setupAppShell() {
+    const sidebar = document.querySelector("[data-app-sidebar]");
+    const toggle = document.querySelector("[data-sidebar-toggle]");
+    const overlay = document.querySelector("[data-sidebar-overlay]");
+
+    if (!sidebar || !toggle || !overlay) {
+        return;
     }
 
-    themeBtn.addEventListener('click', () => {
-        document.body.classList.toggle('dark-mode');
-        const isDark = document.body.classList.contains('dark-mode');
-        themeBtn.textContent = isDark ? '\u2600\uFE0F' : '\u{1F319}';
-        themeBtn.setAttribute('aria-label', isDark ? 'Alternar tema claro' : 'Alternar tema escuro');
-        localStorage.setItem('theme', isDark ? 'dark' : 'light');
+    const closeSidebar = () => {
+        sidebar.classList.remove("is-open");
+        overlay.classList.remove("is-visible");
+        document.body.classList.remove("menu-open");
+        toggle.setAttribute("aria-expanded", "false");
+    };
+
+    toggle.addEventListener("click", () => {
+        const isOpen = sidebar.classList.toggle("is-open");
+        overlay.classList.toggle("is-visible", isOpen);
+        document.body.classList.toggle("menu-open", isOpen);
+        toggle.setAttribute("aria-expanded", isOpen ? "true" : "false");
     });
 
-    const menuToggle = document.querySelector('.menu-toggle');
-    const navbar = document.querySelector('.main-header .navbar:not(.navbar-static)');
-    const navOverlay = document.querySelector('.nav-overlay');
-    const navLinks = navbar ? navbar.querySelectorAll('a[href]') : [];
+    overlay.addEventListener("click", closeSidebar);
+
+    sidebar.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => {
+            if (window.innerWidth <= 1080) {
+                closeSidebar();
+            }
+        });
+    });
+
+    window.addEventListener("resize", () => {
+        if (window.innerWidth > 1080) {
+            closeSidebar();
+        }
+    });
+}
+
+if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", initializeApp);
+} else {
+    initializeApp();
+}
+
+function setupThemeToggle() {
+    const themeBtn = document.createElement("button");
+    themeBtn.className = "theme-toggle-btn";
+    themeBtn.textContent = "\u{1F319}";
+    themeBtn.title = "Alternar tema";
+    themeBtn.setAttribute("aria-label", "Alternar tema escuro");
+    document.body.appendChild(themeBtn);
+
+    if (localStorage.getItem("theme") === "dark") {
+        document.body.classList.add("dark-mode");
+        themeBtn.textContent = "\u2600\uFE0F";
+        themeBtn.setAttribute("aria-label", "Alternar tema claro");
+    }
+
+    themeBtn.addEventListener("click", () => {
+        document.body.classList.toggle("dark-mode");
+        const isDark = document.body.classList.contains("dark-mode");
+        themeBtn.textContent = isDark ? "\u2600\uFE0F" : "\u{1F319}";
+        themeBtn.setAttribute("aria-label", isDark ? "Alternar tema claro" : "Alternar tema escuro");
+        localStorage.setItem("theme", isDark ? "dark" : "light");
+    });
+}
+
+function setupResponsiveMenu() {
+    const menuToggle = document.querySelector(".menu-toggle");
+    const navbar = document.querySelector(".main-header .navbar:not(.navbar-static)");
+    const navOverlay = document.querySelector(".nav-overlay");
+    const navLinks = navbar ? navbar.querySelectorAll("a[href]") : [];
 
     function closeMenu() {
         if (!menuToggle || !navbar) {
             return;
         }
-
-        menuToggle.classList.remove('is-active');
-        menuToggle.setAttribute('aria-expanded', 'false');
-        navbar.classList.remove('is-open');
-        document.body.classList.remove('menu-open');
+        menuToggle.classList.remove("is-active");
+        menuToggle.setAttribute("aria-expanded", "false");
+        navbar.classList.remove("is-open");
+        document.body.classList.remove("menu-open");
     }
 
     function openMenu() {
         if (!menuToggle || !navbar) {
             return;
         }
-
-        menuToggle.classList.add('is-active');
-        menuToggle.setAttribute('aria-expanded', 'true');
-        navbar.classList.add('is-open');
-        document.body.classList.add('menu-open');
+        menuToggle.classList.add("is-active");
+        menuToggle.setAttribute("aria-expanded", "true");
+        navbar.classList.add("is-open");
+        document.body.classList.add("menu-open");
     }
 
     if (menuToggle && navbar) {
-        menuToggle.addEventListener('click', () => {
-            const isOpen = navbar.classList.contains('is-open');
+        menuToggle.addEventListener("click", () => {
+            const isOpen = navbar.classList.contains("is-open");
             if (isOpen) {
                 closeMenu();
             } else {
@@ -58,7 +113,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         navLinks.forEach((link) => {
-            link.addEventListener('click', () => {
+            link.addEventListener("click", () => {
                 if (window.innerWidth <= 768) {
                     closeMenu();
                 }
@@ -66,68 +121,45 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (navOverlay) {
-            navOverlay.addEventListener('click', closeMenu);
+            navOverlay.addEventListener("click", closeMenu);
         }
 
-        window.addEventListener('resize', () => {
+        window.addEventListener("resize", () => {
             if (window.innerWidth > 768) {
                 closeMenu();
             }
         });
     }
+}
 
-    const calendarViews = document.querySelectorAll('[data-calendar]');
+function setupSidebarCalendar() {
+    const calendarViews = document.querySelectorAll("[data-calendar]");
+    if (!calendarViews.length) {
+        return;
+    }
+
+    const eventsNode = document.getElementById("calendar-events-data");
+    const backendEvents = safeJsonParse(eventsNode ? eventsNode.textContent : "[]");
     const calendarState = {
         viewDate: new Date(),
-        selectedDate: null
+        selectedDate: null,
     };
-    const defaultAcademicEvents = [
-        {
-            date: '2026-05-08',
-            title: 'Simulado de Matematica',
-            shortTitle: 'Simulado'
-        },
-        {
-            date: '2026-05-15',
-            title: 'Entrega de Historia',
-            shortTitle: 'Historia'
-        },
-        {
-            date: '2026-05-20',
-            title: 'Lista de Funcoes',
-            shortTitle: 'Lista'
-        },
-        {
-            date: '2026-05-29',
-            title: 'Relatorio de Biologia',
-            shortTitle: 'Biologia'
-        }
-    ];
-    let customAcademicEvents = loadCustomAcademicEvents();
 
-    if (calendarViews.length) {
-        document.querySelectorAll('[data-calendar-prev]').forEach((button) => {
-            button.addEventListener('click', () => {
-                calendarState.viewDate.setMonth(calendarState.viewDate.getMonth() - 1);
-                calendarState.selectedDate = null;
-                renderCalendars();
-            });
+    document.querySelectorAll("[data-calendar-prev]").forEach((button) => {
+        button.addEventListener("click", () => {
+            calendarState.viewDate.setMonth(calendarState.viewDate.getMonth() - 1);
+            calendarState.selectedDate = null;
+            renderCalendars();
         });
+    });
 
-        document.querySelectorAll('[data-calendar-next]').forEach((button) => {
-            button.addEventListener('click', () => {
-                calendarState.viewDate.setMonth(calendarState.viewDate.getMonth() + 1);
-                calendarState.selectedDate = null;
-                renderCalendars();
-            });
+    document.querySelectorAll("[data-calendar-next]").forEach((button) => {
+        button.addEventListener("click", () => {
+            calendarState.viewDate.setMonth(calendarState.viewDate.getMonth() + 1);
+            calendarState.selectedDate = null;
+            renderCalendars();
         });
-
-        document.querySelectorAll('[data-calendar-add]').forEach((button) => {
-            button.addEventListener('click', addCustomAcademicEvent);
-        });
-
-        renderCalendars();
-    }
+    });
 
     function renderCalendars() {
         const year = calendarState.viewDate.getFullYear();
@@ -138,18 +170,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const startOffset = (firstDay.getDay() + 6) % 7;
         const startDate = new Date(year, month, 1 - startOffset);
         const totalCells = 42;
-        const weekdayLabels = ['Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sab', 'Dom'];
+        const weekdayLabels = ["Seg", "Ter", "Qua", "Qui", "Sex", "Sab", "Dom"];
 
-        document.querySelectorAll('[data-calendar-title]').forEach((titleElement) => {
+        document.querySelectorAll("[data-calendar-title]").forEach((titleElement) => {
             titleElement.textContent = title;
         });
 
         calendarViews.forEach((calendar) => {
-            const isLarge = calendar.dataset.calendar === 'large';
-            const cells = weekdayLabels
-                .map((weekday) => `<span class="weekday">${weekday}</span>`)
-                .join('');
-            let days = '';
+            const cells = weekdayLabels.map((weekday) => `<span class="weekday">${weekday}</span>`).join("");
+            let days = "";
 
             for (let index = 0; index < totalCells; index += 1) {
                 const cellDate = new Date(startDate);
@@ -159,43 +188,30 @@ document.addEventListener('DOMContentLoaded', () => {
                 const classes = [];
 
                 if (cellDate.getMonth() !== month) {
-                    classes.push('muted-day');
+                    classes.push("muted-day");
                 }
-
                 if (cellKey === todayKey) {
-                    classes.push('today');
+                    classes.push("today");
                 }
-
                 if (events.length) {
-                    classes.push('event-day');
+                    classes.push("event-day");
                 }
-
                 if (cellKey === calendarState.selectedDate) {
-                    classes.push('selected-day');
+                    classes.push("selected-day");
                 }
 
-                const classAttr = classes.length ? ` class="${classes.join(' ')}"` : '';
-
-                if (isLarge) {
-                    const eventLabel = events[0] ? `<span>${escapeHtml(events[0].shortTitle)}</span>` : '';
-                    const eventText = events[0] ? `, ${events[0].title}` : '';
-                    days += `<button type="button"${classAttr} data-date="${cellKey}" aria-label="${cellDate.getDate()} de ${title}${eventText}">${cellDate.getDate()}${eventLabel}</button>`;
-                } else {
-                    days += `<span${classAttr}>${cellDate.getDate()}</span>`;
-                }
+                const classAttr = classes.length ? ` class="${classes.join(" ")}"` : "";
+                const tooltip = events.map((event) => escapeHtml(event.title)).join(" | ");
+                days += `<button type="button"${classAttr} data-date="${cellKey}" title="${tooltip}">${cellDate.getDate()}</button>`;
             }
 
             calendar.innerHTML = cells + days;
-            calendar.setAttribute('aria-label', `Calendario de ${title}`);
-
-            if (isLarge) {
-                calendar.querySelectorAll('[data-date]').forEach((dayButton) => {
-                    dayButton.addEventListener('click', () => {
-                        calendarState.selectedDate = dayButton.dataset.date;
-                        renderCalendars();
-                    });
+            calendar.querySelectorAll("[data-date]").forEach((dayButton) => {
+                dayButton.addEventListener("click", () => {
+                    calendarState.selectedDate = dayButton.dataset.date;
+                    renderCalendars();
                 });
-            }
+            });
         });
 
         renderCalendarEvents(year, month);
@@ -203,218 +219,566 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderCalendarEvents(year, month) {
         const selectedDate = calendarState.selectedDate ? parseDateKey(calendarState.selectedDate) : null;
-        const selectedInView = selectedDate
-            && selectedDate.getFullYear() === year
-            && selectedDate.getMonth() === month;
+        const selectedInView = selectedDate && selectedDate.getFullYear() === year && selectedDate.getMonth() === month;
         const events = selectedInView
             ? getEventsForDate(calendarState.selectedDate)
-            : getAllCalendarEvents().filter((event) => {
+            : backendEvents.filter((event) => {
                 const eventDate = parseDateKey(event.date);
                 return eventDate.getFullYear() === year && eventDate.getMonth() === month;
             });
 
-        document.querySelectorAll('[data-calendar-events]').forEach((eventList) => {
+        document.querySelectorAll("[data-calendar-events]").forEach((eventList) => {
             if (!events.length) {
-                const emptyLabel = selectedInView
-                    ? formatDayTitle(selectedDate)
-                    : formatMonthTitle(calendarState.viewDate);
                 eventList.innerHTML = `
                     <div class="empty-events">
-                        <strong>${emptyLabel}</strong>
+                        <strong>${selectedInView ? formatDayTitle(selectedDate) : formatMonthTitle(calendarState.viewDate)}</strong>
                         <span class="muted-text">Sem eventos cadastrados.</span>
                     </div>
                 `;
                 return;
             }
 
-            eventList.innerHTML = events
-                .map((event) => {
-                    const eventDate = parseDateKey(event.date);
-                    return `
-                        <div>
-                            <strong>${formatDayTitle(eventDate)}</strong>
-                            <span class="muted-text">${escapeHtml(event.title)}</span>
-                        </div>
-                    `;
-                })
-                .join('');
+            eventList.innerHTML = events.map((event) => {
+                const eventClass = sanitizeClassName(event.event_type || event.type);
+                return `
+                    <div class="calendar-event-item">
+                        <span class="event-pill ${eventClass}">${escapeHtml(event.type)}</span>
+                        <strong>${formatDayTitle(parseDateKey(event.date))}</strong>
+                        <span class="muted-text">
+                            ${escapeHtml(event.title)} • ${escapeHtml(event.classroom || "Geral")}
+                            ${event.subject ? ` • ${escapeHtml(event.subject)}` : ""}
+                        </span>
+                    </div>
+                `;
+            }).join("");
         });
     }
 
+    function sanitizeClassName(value) {
+        return String(value)
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/(^-|-$)/g, "");
+    }
+
     function getEventsForDate(dateKey) {
-        return getAllCalendarEvents().filter((event) => event.date === dateKey);
+        return backendEvents.filter((event) => event.date === dateKey);
     }
 
-    function getAllCalendarEvents() {
-        return [...defaultAcademicEvents, ...customAcademicEvents];
-    }
+    renderCalendars();
+}
 
-    function addCustomAcademicEvent() {
-        const fallbackDate = calendarState.selectedDate || formatDateKey(calendarState.viewDate);
-        const rawDate = window.prompt('Data do evento (AAAA-MM-DD ou DD/MM/AAAA)', fallbackDate);
+function setupFeedInteractions() {
+    const csrfToken = getCsrfToken();
+    const postForm = document.querySelector(".ajax-post-form");
+    const feedList = document.querySelector("[data-feed-list]");
+    const aiReviewButton = document.querySelector("[data-ai-review-btn]");
 
-        if (!rawDate) {
-            return;
-        }
+    if (postForm && aiReviewButton) {
+        aiReviewButton.addEventListener("click", async () => {
+            const titleInput = postForm.querySelector("#id_post-title");
+            const contentInput = postForm.querySelector("#id_post-content");
+            const messageNode = postForm.querySelector("[data-post-form-message]");
 
-        const eventDate = normalizeEventDate(rawDate);
+            if (!contentInput || !contentInput.value.trim()) {
+                if (messageNode) {
+                    messageNode.textContent = "Escreva a publicação antes de pedir revisão.";
+                }
+                return;
+            }
 
-        if (!eventDate) {
-            window.alert('Use uma data valida, como 2026-05-20 ou 20/05/2026.');
-            return;
-        }
+            aiReviewButton.disabled = true;
+            aiReviewButton.classList.add("loading");
+            if (messageNode) {
+                messageNode.textContent = "Revisando texto com IA...";
+            }
 
-        const title = window.prompt('Titulo do evento');
-
-        if (!title || !title.trim()) {
-            return;
-        }
-
-        const cleanedTitle = title.trim();
-        const event = {
-            date: eventDate,
-            title: cleanedTitle,
-            shortTitle: cleanedTitle.split(/\s+/).slice(0, 2).join(' ')
-        };
-        const parsedDate = parseDateKey(eventDate);
-
-        customAcademicEvents = [...customAcademicEvents, event];
-        localStorage.setItem('educasCustomEvents', JSON.stringify(customAcademicEvents));
-        calendarState.viewDate = new Date(parsedDate.getFullYear(), parsedDate.getMonth(), 1);
-        calendarState.selectedDate = eventDate;
-        renderCalendars();
-    }
-
-    function loadCustomAcademicEvents() {
-        try {
-            const savedEvents = JSON.parse(localStorage.getItem('educasCustomEvents') || '[]');
-            return Array.isArray(savedEvents)
-                ? savedEvents.filter((event) => event && event.date && event.title)
-                : [];
-        } catch (error) {
-            return [];
-        }
-    }
-
-    function normalizeEventDate(value) {
-        const cleanValue = value.trim();
-        let dateKey = '';
-        const isoMatch = cleanValue.match(/^(\d{4})-(\d{2})-(\d{2})$/);
-        const brMatch = cleanValue.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
-
-        if (isoMatch) {
-            dateKey = cleanValue;
-        } else if (brMatch) {
-            dateKey = `${brMatch[3]}-${brMatch[2]}-${brMatch[1]}`;
-        } else {
-            return null;
-        }
-
-        const parsedDate = parseDateKey(dateKey);
-        return formatDateKey(parsedDate) === dateKey ? dateKey : null;
-    }
-
-    function formatDateKey(date) {
-        const year = date.getFullYear();
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const day = String(date.getDate()).padStart(2, '0');
-        return `${year}-${month}-${day}`;
-    }
-
-    function parseDateKey(dateKey) {
-        const [year, month, day] = dateKey.split('-').map(Number);
-        return new Date(year, month - 1, day);
-    }
-
-    function formatMonthTitle(date) {
-        const title = new Intl.DateTimeFormat('pt-BR', {
-            month: 'long',
-            year: 'numeric'
-        }).format(date);
-
-        return title.charAt(0).toUpperCase() + title.slice(1);
-    }
-
-    function formatDayTitle(date) {
-        return new Intl.DateTimeFormat('pt-BR', {
-            day: '2-digit',
-            month: 'short'
-        }).format(date).replace('.', '');
-    }
-
-    function escapeHtml(value) {
-        return value.replace(/[&<>"']/g, (char) => ({
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        }[char]));
-    }
-
-    const feedContainer = document.getElementById('feed-infinite-scroll');
-
-    if (feedContainer) {
-        window.addEventListener('scroll', () => {
-            const { scrollTop, scrollHeight, clientHeight } = document.documentElement;
-            if (scrollTop + clientHeight >= scrollHeight - 100) {
-                loadMorePosts();
+            try {
+                const response = await fetch(postForm.dataset.aiReviewUrl, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    body: new URLSearchParams({
+                        title: titleInput ? titleInput.value : "",
+                        content: contentInput.value,
+                    }),
+                });
+                const payload = await response.json();
+                if (!response.ok) {
+                    throw new Error(payload.error || "Falha ao revisar texto.");
+                }
+                if (titleInput && payload.reviewed.title) {
+                    titleInput.value = payload.reviewed.title;
+                }
+                contentInput.value = payload.reviewed.content || contentInput.value;
+                if (messageNode) {
+                    const source = payload.meta && payload.meta.used_api ? "OpenRouter" : "fallback local";
+                    messageNode.textContent = `Texto revisado com ${source}.`;
+                }
+            } catch (error) {
+                if (messageNode) {
+                    messageNode.textContent = error.message || "Erro ao revisar.";
+                }
+            } finally {
+                aiReviewButton.disabled = false;
+                aiReviewButton.classList.remove("loading");
             }
         });
     }
 
-    let isLoading = false;
+    if (postForm && feedList) {
+        postForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const submitButton = postForm.querySelector("button[type='submit']");
+            const messageNode = postForm.querySelector("[data-post-form-message]");
+            const formData = new FormData(postForm);
 
-    function loadMorePosts() {
-        if (!feedContainer || isLoading) {
+            if (!submitButton) {
+                return;
+            }
+
+            submitButton.disabled = true;
+            submitButton.classList.add("loading");
+            if (messageNode) {
+                messageNode.textContent = "Publicando...";
+            }
+
+            try {
+                const response = await fetch(postForm.dataset.createPostUrl, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    body: formData,
+                });
+                const payload = await response.json();
+                if (!response.ok) {
+                    throw new Error(flattenFormErrors(payload.errors) || "Nao foi possivel publicar.");
+                }
+                const emptyState = feedList.querySelector("[data-feed-empty-state]");
+                if (emptyState) {
+                    const emptyCard = emptyState.closest(".card");
+                    if (emptyCard) {
+                        emptyCard.remove();
+                    } else {
+                        emptyState.remove();
+                    }
+                }
+                feedList.insertAdjacentHTML("afterbegin", renderPostCard(payload.post));
+                hydratePostCard(feedList.firstElementChild, csrfToken);
+                postForm.reset();
+                if (messageNode) {
+                    messageNode.textContent = "Publicacao enviada e colocada no topo.";
+                }
+            } catch (error) {
+                if (messageNode) {
+                    messageNode.textContent = error.message || "Erro ao publicar.";
+                }
+                console.error(error);
+            } finally {
+                submitButton.disabled = false;
+                submitButton.classList.remove("loading");
+            }
+        });
+    }
+
+    // Reaction buttons: optimistic UI + graceful rollback on error
+    document.querySelectorAll("[data-post-id]").forEach((postCard) => {
+        hydratePostCard(postCard, csrfToken);
+    });
+
+    document.querySelectorAll("[data-comment-id]").forEach((commentCard) => {
+        hydrateCommentDeletion(commentCard, csrfToken);
+    });
+}
+
+function setupFileUploads() {
+    document.querySelectorAll("[data-file-upload]").forEach((wrapper) => {
+        const input = wrapper.querySelector("input[type='file']");
+        const label = wrapper.querySelector("[data-file-upload-text]");
+
+        if (!input || !label) {
             return;
         }
 
-        isLoading = true;
+        const renderFileState = () => {
+            if (input.files && input.files.length) {
+                const file = input.files[0];
+                const sizeMb = (file.size / (1024 * 1024)).toFixed(2);
+                label.textContent = `${file.name} · ${sizeMb} MB`;
+                wrapper.classList.add("has-file");
+            } else {
+                label.textContent = "Nenhum arquivo selecionado";
+                wrapper.classList.remove("has-file");
+            }
+        };
 
-        setTimeout(() => {
-            const newPosts = generateRandomPosts(2);
-            feedContainer.insertAdjacentHTML('beforeend', newPosts);
-            isLoading = false;
-        }, 500);
+        input.addEventListener("change", renderFileState);
+        renderFileState();
+    });
+}
+
+function hydratePostCard(postCard, csrfToken) {
+    if (!postCard || postCard.dataset.bound === "true") {
+        return;
+    }
+    postCard.dataset.bound = "true";
+
+    const reactButton = postCard.querySelector("[data-react-url]");
+    if (reactButton) {
+        reactButton.setAttribute("aria-pressed", reactButton.classList.contains("is-active") ? "true" : "false");
+        reactButton.addEventListener("click", async () => {
+            const button = reactButton;
+            const postCard = button.closest("[data-post-id]");
+            const countEl = postCard ? postCard.querySelector("[data-like-count]") : null;
+            const currentActive = button.classList.contains("is-active");
+            // optimistic update
+            const optimisticActive = !currentActive;
+            button.classList.toggle("is-active", optimisticActive);
+            button.setAttribute("aria-pressed", optimisticActive ? "true" : "false");
+            if (countEl) {
+                const n = parseInt((countEl.textContent || "0").replace(/[^0-9-]/g, ""), 10) || 0;
+                countEl.textContent = `${optimisticActive ? n + 1 : Math.max(0, n - 1)} curtida(s)`;
+            }
+            button.classList.add("loading");
+            try {
+                const response = await fetch(button.dataset.reactUrl, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": getCsrfToken(),
+                        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    body: new URLSearchParams({
+                        post_id: button.dataset.postId,
+                        reaction_type: button.dataset.reactionType,
+                    }),
+                });
+                const payload = await response.json();
+                if (!response.ok) {
+                    throw new Error(payload.error || "Falha ao curtir.");
+                }
+                // apply authoritative state from server
+                renderReactionState(postCard, payload);
+            } catch (error) {
+                // rollback optimistic UI
+                button.classList.toggle("is-active", currentActive);
+                button.setAttribute("aria-pressed", currentActive ? "true" : "false");
+                if (countEl) {
+                    const n = parseInt((countEl.textContent || "0").replace(/[^0-9-]/g, ""), 10) || 0;
+                    countEl.textContent = `${currentActive ? n + 1 : Math.max(0, n - 1)} curtida(s)`;
+                }
+                console.error(error);
+                window.alert(error.message || "Erro ao processar curtida.");
+            } finally {
+                button.classList.remove("loading");
+            }
+        });
     }
 
-    function generateRandomPosts(count) {
-        const names = ['Prof. Amanda Silva', 'Secretaria Academica', 'Grupo de Estudos', 'Prof. Carlos Bio'];
-        const contents = [
-            'Nao esquecam que a data limite para entrega do trabalho e amanha!',
-            'Novo evento cultural na escola na proxima semana. Inscrevam-se.',
-            'Alguem tem as anotacoes da aula de Quimica?',
-            'Lembrete: reuniao de pais e mestres nesta sexta-feira.'
-        ];
+    const commentFocusButton = postCard.querySelector("[data-comment-focus]");
+    if (commentFocusButton) {
+        const button = commentFocusButton;
+        button.addEventListener("click", () => {
+            const postCard = button.closest("[data-post-id]");
+            const textarea = postCard ? postCard.querySelector("textarea[name='comment-content']") : null;
+            if (!textarea) {
+                return;
+            }
+            textarea.focus();
+            textarea.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        });
+    }
 
-        let html = '';
+    const commentForm = postCard.querySelector(".ajax-comment-form");
+    if (commentForm) {
+        const form = commentForm;
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+            const textarea = form.querySelector("textarea[name='comment-content']");
+            const postCard = form.closest("[data-post-id]");
+            const stream = postCard ? postCard.querySelector("[data-comment-stream]") : null;
+            const commentCount = postCard ? postCard.querySelector("[data-comment-count]") : null;
+            const submitBtn = form.querySelector("button[type='submit']");
+            const originalBtnText = submitBtn ? submitBtn.innerHTML : null;
+            const postIdInput = form.querySelector("input[name='post_id']");
 
-        for (let i = 0; i < count; i += 1) {
-            const randomName = names[Math.floor(Math.random() * names.length)];
-            const randomContent = contents[Math.floor(Math.random() * contents.length)];
+            if (!textarea || !submitBtn || !postIdInput || !stream || !commentCount) {
+                return;
+            }
 
-            html += `
-            <article class="card fade-in-up">
-                <div class="post-header">
-                    <div class="avatar avatar-default" role="img" aria-label="Avatar padrao do usuario"></div>
-                    <div class="user-info">
-                        <h4>${randomName}</h4>
-                        <span>Recentemente</span>
+            const content = textarea.value.trim();
+            if (!content) {
+                textarea.focus();
+                return;
+            }
+
+            submitBtn.disabled = true;
+            submitBtn.classList.add("loading");
+            submitBtn.innerHTML = `<span class="spinner" aria-hidden="true"></span> Enviando...`;
+
+            try {
+                const response = await fetch(form.dataset.commentUrl, {
+                    method: "POST",
+                    headers: {
+                        "X-CSRFToken": csrfToken,
+                        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                        "X-Requested-With": "XMLHttpRequest",
+                    },
+                    body: new URLSearchParams({
+                        post_id: postIdInput.value,
+                        "comment-content": content,
+                    }),
+                });
+                const payload = await response.json();
+                if (!response.ok) {
+                    throw new Error(payload.error || "Nao foi possivel enviar o comentario.");
+                }
+                const emptyState = stream.querySelector("[data-empty-comments]");
+                if (emptyState) {
+                    emptyState.remove();
+                }
+                stream.insertAdjacentHTML("beforeend", renderComment(payload.comment));
+                hydrateCommentDeletion(stream.lastElementChild, csrfToken);
+                commentCount.textContent = `${payload.comment_count} comentario(s)`;
+                textarea.value = "";
+                textarea.focus();
+            } catch (error) {
+                window.alert(error.message);
+                console.error(error);
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove("loading");
+                if (originalBtnText) {
+                    submitBtn.innerHTML = originalBtnText;
+                }
+            }
+        });
+    }
+}
+
+function renderReactionState(postCard, payload) {
+    const button = postCard.querySelector("[data-react-url]");
+    const count = postCard.querySelector("[data-like-count]");
+    if (button) {
+        button.classList.toggle("is-active", payload.current_user_reaction === "like");
+    }
+    if (count) {
+        count.textContent = `${payload.total} curtida(s)`;
+    }
+}
+
+function renderComment(comment) {
+    const avatar = comment.avatar
+        ? `<img src="${escapeHtml(comment.avatar)}" alt="${escapeHtml(comment.author)}">`
+        : `<span>${escapeHtml(comment.initials)}</span>`;
+    const deleteButton = comment.can_delete
+        ? `
+            <button
+                type="button"
+                class="comment-delete-btn"
+                data-comment-delete-url="/feed/comments/delete/"
+                data-comment-id="${comment.id}"
+            >
+                Excluir
+            </button>
+        `
+        : "";
+    return `
+        <div class="comment-card" data-comment-id="${comment.id}">
+            <div class="comment-avatar">${avatar}</div>
+            <div class="comment-body">
+                <strong>${escapeHtml(comment.author)}</strong>
+                <span class="muted-text">${escapeHtml(comment.created_at)}</span>
+                <p>${escapeHtml(comment.content)}</p>
+                ${deleteButton}
+            </div>
+        </div>
+    `;
+}
+
+function renderPostCard(post) {
+    const attachmentMarkup = !post.attachment_url
+        ? ""
+        : `
+            ${post.attachment_is_image ? `<p><img src="${escapeHtml(post.attachment_url)}" alt="${escapeHtml(post.title)}" style="max-width: 100%; border-radius: 18px;"></p>` : ""}
+            <p class="attachment-chip">
+                <span>${escapeHtml(post.attachment_extension)}</span>
+                <a href="${escapeHtml(post.attachment_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(post.attachment_name)}</a>
+            </p>
+        `;
+    const deleteMarkup = post.can_delete
+        ? `
+            <form method="post">
+                <input type="hidden" name="csrfmiddlewaretoken" value="${escapeHtml(getCsrfToken())}">
+                <input type="hidden" name="action" value="delete_post">
+                <input type="hidden" name="post_id" value="${post.id}">
+                <button class="action-btn" type="submit">Excluir</button>
+            </form>
+        `
+        : "";
+
+    return `
+        <article class="card live-post-card" data-post-id="${post.id}">
+            <div class="post-header">
+                <div class="avatar avatar-brand">${escapeHtml(post.author_initials)}</div>
+                <div class="user-info">
+                    <h4>
+                        ${escapeHtml(post.title)}
+                        ${post.is_pinned ? '<span class="pill-highlight">Fixado</span>' : ""}
+                    </h4>
+                    <span>
+                        ${escapeHtml(post.author)} - ${escapeHtml(post.classroom)}
+                        ${post.subject ? ` - ${escapeHtml(post.subject)}` : ""}
+                        - ${escapeHtml(post.created_at)}
+                    </span>
+                </div>
+            </div>
+            <div class="post-content">
+                <p>${escapeHtml(post.content).replace(/\n/g, "<br>")}</p>
+                ${attachmentMarkup}
+            </div>
+            <div class="post-actions">
+                <button
+                    type="button"
+                    class="action-btn action-btn-heart"
+                    data-react-url="${escapeHtml(post.react_url)}"
+                    data-post-id="${post.id}"
+                    data-reaction-type="like"
+                    aria-label="Curtir publicacao"
+                >
+                    <span aria-hidden="true">&#10084;</span>
+                    <span>Curtir</span>
+                </button>
+                <span class="action-stat" data-like-count>${post.reaction_payload.total} curtida(s)</span>
+                <button type="button" class="action-btn" data-comment-focus>
+                    <span aria-hidden="true">&#128172;</span>
+                    <span data-comment-count>${post.comment_count} comentario(s)</span>
+                </button>
+                ${deleteMarkup}
+            </div>
+            <div class="card post-comments-card" style="margin-top: 1rem;">
+                <h4 class="widget-title">Comentarios</h4>
+                <div class="comment-stream" data-comment-stream>
+                    <p class="muted-text" data-empty-comments>Nenhum comentario ainda.</p>
+                </div>
+                <form method="post" class="contact-form ajax-comment-form" data-comment-url="${escapeHtml(post.comment_url)}">
+                    <input type="hidden" name="csrfmiddlewaretoken" value="${escapeHtml(getCsrfToken())}">
+                    <input type="hidden" name="post_id" value="${post.id}">
+                    <div class="form-group">
+                        <label class="label-left" for="comment-${post.id}">Adicionar comentario</label>
+                        <textarea id="comment-${post.id}" name="comment-content" rows="2" placeholder="Escreva seu comentario."></textarea>
                     </div>
-                </div>
-                <div class="post-content">
-                    <p>${randomContent}</p>
-                </div>
-                <div class="post-actions">
-                    <button class="action-btn emoji-action" aria-label="Curtir" title="Curtir">❤️</button>
-                    <button class="action-btn emoji-action" aria-label="Comentar" title="Comentar">💬</button>
-                    <button class="action-btn emoji-action" aria-label="Salvar" title="Salvar">🔖</button>
-                </div>
-            </article>
-            `;
-        }
+                    <button type="submit" class="btn btn-secondary btn-compact">
+                        <span aria-hidden="true">&#128172;</span> Comentar
+                    </button>
+                </form>
+            </div>
+        </article>
+    `;
+}
 
-        return html;
+function hydrateCommentDeletion(commentCard, csrfToken) {
+    const deleteButton = commentCard.querySelector("[data-comment-delete-url]");
+    if (!deleteButton || deleteButton.dataset.bound === "true") {
+        return;
     }
-});
+    deleteButton.dataset.bound = "true";
+    deleteButton.addEventListener("click", async () => {
+        const postCard = commentCard.closest("[data-post-id]");
+        const commentCount = postCard.querySelector("[data-comment-count]");
+        const stream = postCard.querySelector("[data-comment-stream]");
+
+        try {
+            const response = await fetch(deleteButton.dataset.commentDeleteUrl, {
+                method: "POST",
+                headers: {
+                    "X-CSRFToken": csrfToken,
+                    "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+                    "X-Requested-With": "XMLHttpRequest",
+                },
+                body: new URLSearchParams({
+                    comment_id: deleteButton.dataset.commentId,
+                }),
+            });
+            const payload = await response.json();
+            if (!response.ok) {
+                throw new Error(payload.error || "Nao foi possivel excluir o comentario.");
+            }
+            commentCard.remove();
+            commentCount.textContent = `${payload.comment_count} comentario(s)`;
+            if (stream && !stream.querySelector("[data-comment-id]")) {
+                stream.innerHTML = '<p class="muted-text" data-empty-comments>Nenhum comentario ainda.</p>';
+            }
+        } catch (error) {
+            window.alert(error.message);
+        }
+    });
+}
+
+function getCsrfToken() {
+    const tokenInput = document.querySelector("input[name='csrfmiddlewaretoken']");
+    if (tokenInput && tokenInput.value) return tokenInput.value;
+    // fallback to cookie (Django default name 'csrftoken')
+    const match = document.cookie.match(/(^|; )csrftoken=([^;]+)/);
+    return match ? decodeURIComponent(match[2]) : "";
+}
+
+function safeJsonParse(value) {
+    try {
+        return JSON.parse(value || "[]");
+    } catch (error) {
+        return [];
+    }
+}
+
+function formatDateKey(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    return `${year}-${month}-${day}`;
+}
+
+function parseDateKey(dateKey) {
+    const [year, month, day] = dateKey.split("-").map(Number);
+    return new Date(year, month - 1, day);
+}
+
+function formatMonthTitle(date) {
+    const title = new Intl.DateTimeFormat("pt-BR", {
+        month: "long",
+        year: "numeric",
+    }).format(date);
+    return title.charAt(0).toUpperCase() + title.slice(1);
+}
+
+function formatDayTitle(date) {
+    return new Intl.DateTimeFormat("pt-BR", {
+        day: "2-digit",
+        month: "short",
+    }).format(date).replace(".", "");
+}
+
+function escapeHtml(value) {
+    return String(value).replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        "\"": "&quot;",
+        "'": "&#039;",
+    }[char]));
+}
+
+function flattenFormErrors(errors) {
+    if (!errors) {
+        return "";
+    }
+    return Object.values(errors)
+        .flat()
+        .map((item) => item.message || item)
+        .join(" ");
+}

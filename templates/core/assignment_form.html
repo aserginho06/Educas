@@ -1,0 +1,72 @@
+{% extends "core/base_app.html" %}
+
+{% block title %}{% if is_editing %}Editar Atividade{% else %}Nova Atividade{% endif %} | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Planejamento pedagógico</span>
+        <h1>{% if is_editing %}Editar atividade{% else %}Nova atividade{% endif %}</h1>
+        <p>Formulário limpo, espaçamento decente e upload menos feio. O básico bem feito.</p>
+    </div>
+    <a href="{% url 'core:assignment_list' %}" class="btn btn-secondary btn-compact">Voltar</a>
+</div>
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="card">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="dashboard-grid">
+                    {% for field in form.visible_fields %}
+                    <div class="form-group {% if field.name == 'description' or field.name == 'attachment' %}form-field-full{% endif %} {% if field.name == 'attachment' %}file-upload-field{% endif %}" {% if field.name == 'attachment' %}data-file-upload{% endif %}>
+                        <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                        {% if field.name == 'attachment' %}
+                        <div class="file-upload-box">
+                            {{ field }}
+                            <div class="file-upload-copy">
+                                <strong>Anexe o material da atividade</strong>
+                                <span data-file-upload-text>Nenhum arquivo selecionado</span>
+                            </div>
+                        </div>
+                        {% else %}
+                        {{ field }}
+                        {% endif %}
+                        {% if field.help_text %}<small>{{ field.help_text }}</small>{% endif %}
+                        {% for error in field.errors %}
+                        <div class="form-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+                {% if form.non_field_errors %}
+                <div class="form-error">
+                    {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Salvar atividade</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Checklist rápido</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Prazo com hora</strong>
+                    <span class="muted-text">Evita ambiguidade na entrega.</span>
+                </div>
+                <div>
+                    <strong>Descrição objetiva</strong>
+                    <span class="muted-text">Aluno entende melhor quando a tarefa não vem torta.</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+{% endblock %}

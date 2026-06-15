@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Detalhes da Atividade | Educas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-page">
+    <header class="main-header">
+        <div class="container header-container app-header">
+            <a href="/professor.html" class="logo">
+                <img src="/assets/img/logo.png" alt="Logo Educas">
+                Educas
+            </a>
+            <nav class="navbar navbar-static" aria-label="Navegacao principal">
+                <ul>
+                    <li><a href="/professor/atividades.html">Atividades</a></li>
+                    <li><a href="/professor/atividades/{{ assignment.id }}/detalhe.html" class="active">Detalhes</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="/profile.html" class="text-link">Meu perfil</a>
+                <a href="/logout/" class="btn btn-secondary btn-compact">Sair</a>
+            </div>
+        </div>
+    </header>
+    <main class="app-container">
+        <section class="app-main">
+            <div class="page-heading">
+                <span class="page-kicker">Atividade</span>
+                <h1>{{ assignment.title }}</h1>
+                <p>{{ assignment.description }}</p>
+            </div>
+            <div class="card">
+                <div class="summary-list">
+                    <div><strong>Turma:</strong> {{ assignment.classroom.name }}</div>
+                    <div><strong>Disciplina:</strong> {{ assignment.subject.name }}</div>
+                    <div><strong>Prazo:</strong> {{ assignment.due_at|date:"d/m/Y H:i" }}</div>
+                    <div><strong>Status:</strong> {% if assignment.is_closed %}Encerrada{% else %}Aberta{% endif %}</div>
+                    {% if assignment.attachment %}
+                    <div><strong>Anexo:</strong> <a href="{{ assignment.attachment.url }}" target="_blank">Baixar</a></div>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="card">
+                <h3 class="widget-title">Entregas</h3>
+                <div class="table-wrap">
+                    <table class="compact-table">
+                        <thead>
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Enviado em</th>
+                                <th>Status</th>
+                                <th>Arquivo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for submission in submissions %}
+                            <tr>
+                                <td>{{ submission.student.full_name }}</td>
+                                <td>{{ submission.submitted_at|date:"d/m/Y H:i" }}</td>
+                                <td>{{ submission.get_status_display }}</td>
+                                <td>{% if submission.attachment %}<a href="{{ submission.attachment.url }}" target="_blank">Download</a>{% else %}-{% endif %}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">Nenhuma entrega registrada ainda.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <a href="/professor/atividades.html" class="btn btn-secondary">Voltar</a>
+            </div>
+        </section>
+    </main>
+    <script src="/assets/js/script.js"></script>
+</body>
+</html>

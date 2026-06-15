@@ -1,0 +1,245 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notas do Professor | Educas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/css/style.css">
+<style>body{visibility:visible!important;opacity:1!important}</style></head>
+<body class="app-page shell-page">
+    <div class="app-shell">
+        
+<aside class="app-sidebar" data-app-sidebar>
+    <div class="app-sidebar-top">
+        <a href="/feed.html" class="logo app-sidebar-logo">
+            <img src="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/img/logo.png" alt="Logo Educas">
+            <span>
+                Educas
+                <small>Campus digital</small>
+            </span>
+        </a>
+
+        <div class="app-user-chip">
+            <strong>Paula Demo</strong>
+            <span>Professor</span>
+        </div>
+    </div>
+
+    <nav class="app-sidebar-nav" aria-label="Navegação principal">
+        
+        <a href="/professor.html" class="">
+            <span class="nav-icon nav-icon-grid"></span>
+            <span>Dashboard</span>
+        </a>
+        <a href="/feed.html" class="">
+            <span class="nav-icon nav-icon-feed"></span>
+            <span>Feed</span>
+        </a>
+        <a href="/turmas.html" class="">
+            <span class="nav-icon nav-icon-classroom"></span>
+            <span>Turmas</span>
+        </a>
+        
+        <a href="/aulas.html" class="">
+            <span class="nav-icon nav-icon-lesson"></span>
+            <span>Aulas</span>
+        </a>
+        <a href="/attendance.html" class="">
+            <span class="nav-icon nav-icon-attendance"></span>
+            <span>Frequência</span>
+        </a>
+        <a href="/grades_batch.html" class="active">
+            <span class="nav-icon nav-icon-grade"></span>
+            <span>Notas</span>
+        </a>
+        
+        
+        <a href="/professor/atividades.html" class="">
+            <span class="nav-icon nav-icon-activity"></span>
+            <span>Atividades</span>
+        </a>
+        
+        <a href="/calendario.html" class="">
+            <span class="nav-icon nav-icon-calendar"></span>
+            <span>Calendário</span>
+        </a>
+        <a href="/notificacoes.html" class="">
+            <span class="nav-icon nav-icon-notification"></span>
+            <span>Notificações</span>
+        </a>
+        <a href="/profile.html" class="">
+            <span class="nav-icon nav-icon-profile"></span>
+            <span>Perfil</span>
+        </a>
+        <a href="/profile.html">
+            <span class="nav-icon nav-icon-settings"></span>
+            <span>Configurações</span>
+        </a>
+        
+    </nav>
+
+    <div class="app-sidebar-bottom">
+        
+
+        <a href="/logout/" class="app-logout-link">
+            <span class="nav-icon nav-icon-logout"></span>
+            <span>Sair</span>
+        </a>
+    </div>
+</aside>
+
+
+        <div class="app-shell-body">
+            <header class="app-mobile-header">
+                <button class="app-shell-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" data-sidebar-toggle>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <a href="/feed.html" class="logo app-mobile-logo">
+                    <img src="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/img/logo.png" alt="Logo Educas">
+                    Educas
+                </a>
+                <a href="/profile.html" class="app-mobile-user">Paula</a>
+            </header>
+
+            <main class="app-shell-main">
+                
+<div class="page-heading">
+    <span class="page-kicker">Painel do professor</span>
+    <h1>Gestão de avaliações e notas</h1>
+    <p>Crie avaliação, lance notas e revise o histórico com a mesma casca visual do resto do sistema. Sem navbar repetida enchendo o saco.</p>
+</div>
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="dashboard-grid stats-grid stats-grid-wide">
+            <article class="card stat-card"><span>Avaliações</span><strong>0</strong></article>
+            <article class="card stat-card"><span>Alunos</span><strong>0</strong></article>
+            <article class="card stat-card"><span>Modo</span><strong>Criação</strong></article>
+        </div>
+
+        <div class="card">
+            <h3 class="widget-title">Minhas avaliações</h3>
+            <div class="table-wrap">
+                <table class="compact-table">
+                    <thead>
+                        <tr><th>Tipo</th><th>Disciplina</th><th>Turma</th><th>Data</th><th>Descrição</th><th>Ações</th></tr>
+                    </thead>
+                    <tbody>
+                        
+                        <tr><td colspan="6">Nenhuma avaliação cadastrada ainda.</td></tr>
+                        
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="widget-title">Nova avaliação</h3>
+            <form method="post" class="dashboard-grid">
+                <input type="hidden" name="csrfmiddlewaretoken" value="wqaXeEB3LnRxfn218opMcDXHlLrtFgE3FnXnlFnyuSDUZlRSX7NsfeEoSLIkbXvR">
+                <input type="hidden" name="action" value="create_assessment">
+                <div class="form-group">
+                    <label for="id_assessment-classroom">Turma</label>
+                    <select name="assessment-classroom" required id="id_assessment-classroom">
+  <option value="" selected>---------</option>
+
+  <option value="1">2EM-TESTE A - 2026</option>
+
+</select>
+                    
+                </div>
+                <div class="form-group">
+                    <label for="id_assessment-subject">Disciplina</label>
+                    <select name="assessment-subject" required id="id_assessment-subject">
+  <option value="" selected>---------</option>
+
+  <option value="1">MATDEMO - Matematica Demo</option>
+
+</select>
+                    
+                </div>
+                <div class="form-group">
+                    <label for="id_assessment-assessment_type">Tipo</label>
+                    <select name="assessment-assessment_type" required id="id_assessment-assessment_type">
+  <option value="" selected>---------</option>
+
+  <option value="P1">P1</option>
+
+  <option value="REC1">REC1</option>
+
+  <option value="P2">P2</option>
+
+  <option value="REC2">REC2</option>
+
+  <option value="P3">P3</option>
+
+  <option value="REC3">REC3</option>
+
+  <option value="P4">P4</option>
+
+  <option value="REC4">REC4</option>
+
+  <option value="FINAL">FINAL</option>
+
+</select>
+                    
+                </div>
+                <div class="form-group">
+                    <label for="id_assessment-date">Data</label>
+                    <input type="date" name="assessment-date" required id="id_assessment-date">
+                    
+                </div>
+                <div class="form-group form-field-full">
+                    <label for="id_assessment-description">Descrição</label>
+                    <textarea name="assessment-description" cols="40" rows="3" placeholder="Ex.: Funcoes Exponenciais e Logaritmos" id="id_assessment-description">
+</textarea>
+                    
+                </div>
+                <div class="form-group">
+                    <label for="id_assessment-quantidade_aulas">Quantidade de aulas</label>
+                    <input type="number" name="assessment-quantidade_aulas" value="1" min="0" max="10" required id="id_assessment-quantidade_aulas">
+                    
+                </div>
+                
+                <div class="form-actions form-field-full">
+                    <button type="submit" class="btn btn-primary">Criar avaliação</button>
+                </div>
+            </form>
+        </div>
+
+        
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Resumo rápido</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Permissão</strong>
+                    <span class="muted-text">Professor só visualiza suas turmas e disciplinas.</span>
+                </div>
+                <div>
+                    <strong>Fluxo</strong>
+                    <span class="muted-text">Criar avaliação, lançar notas e salvar em lote.</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+
+            </main>
+        </div>
+    </div>
+
+    <div class="app-shell-overlay" data-sidebar-overlay></div>
+
+    
+    <script src="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/js/script.js"></script>
+</body>
+</html>

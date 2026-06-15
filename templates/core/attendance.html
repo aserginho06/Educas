@@ -1,0 +1,235 @@
+{% extends "core/base_app.html" %}
+
+{% block title %}Frequência | Educas{% endblock %}
+
+{% block app_content %}
+{% if attendance_form %}
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Registro de frequência</span>
+        <h1>Frequência por aula</h1>
+        <p>Prepare a chamada, marque presença e salve sem interface duplicada te atrapalhando.</p>
+    </div>
+    <a href="{% url 'core:professor' %}" class="btn btn-secondary btn-compact">Voltar ao painel</a>
+</div>
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Preparação</span>
+                    <h2>Montar chamada</h2>
+                </div>
+            </div>
+            <form method="post" class="dashboard-grid">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="prepare_attendance">
+                <div class="form-group">
+                    <label for="{{ attendance_form.classroom.id_for_label }}">Turma</label>
+                    {{ attendance_form.classroom }}
+                    {{ attendance_form.classroom.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ attendance_form.subject.id_for_label }}">Disciplina</label>
+                    {{ attendance_form.subject }}
+                    {{ attendance_form.subject.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ attendance_form.date.id_for_label }}">Data</label>
+                    {{ attendance_form.date }}
+                    {{ attendance_form.date.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ attendance_form.lesson_count.id_for_label }}">Aulas ministradas</label>
+                    {{ attendance_form.lesson_count }}
+                    {{ attendance_form.lesson_count.errors }}
+                </div>
+                {% if attendance_form.non_field_errors %}
+                <div class="form-error form-field-full">{{ attendance_form.non_field_errors }}</div>
+                {% endif %}
+                <div class="form-actions form-field-full">
+                    <button type="submit" class="btn btn-primary">Preparar chamada</button>
+                </div>
+            </form>
+        </div>
+
+        {% if is_prepared %}
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">{{ attendance_context.classroom_name }}</span>
+                    <h2>Registrar presença</h2>
+                </div>
+                <span class="section-counter">{{ attendance_context.student_total }} aluno(s)</span>
+            </div>
+            <form method="post">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="save_attendance">
+                <input type="hidden" name="attendance-classroom" value="{{ attendance_context.classroom_pk }}">
+                <input type="hidden" name="attendance-subject" value="{{ attendance_context.subject_pk }}">
+                <input type="hidden" name="attendance-date" value="{{ attendance_context.date|date:'Y-m-d' }}">
+                <input type="hidden" name="attendance-lesson_count" value="{{ attendance_context.lesson_count }}">
+                <div class="table-wrap">
+                    <table class="compact-table">
+                        <thead>
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Status</th>
+                                <th>Observação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in student_records %}
+                            <tr>
+                                <td>{{ row.student.full_name|default:row.student.email }}</td>
+                                <td>
+                                    <select name="status_{{ row.student.id }}">
+                                        <option value="present" {% if not row.attendance or row.attendance.status == 'present' %}selected{% endif %}>Presente</option>
+                                        <option value="absent" {% if row.attendance and row.attendance.status == 'absent' %}selected{% endif %}>Falta</option>
+                                        <option value="excused" {% if row.attendance and row.attendance.status == 'excused' %}selected{% endif %}>Justificada</option>
+                                    </select>
+                                </td>
+                                <td><input type="text" name="notes_{{ row.student.id }}" value="{{ row.attendance.notes|default:'' }}" placeholder="Observação opcional"></td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Salvar frequência</button>
+                </div>
+            </form>
+        </div>
+        {% endif %}
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Resumo rápido</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Fluxo</strong>
+                    <span class="muted-text">Escolha turma, prepare a lista e salve em lote.</span>
+                </div>
+                <div>
+                    <strong>Consistência</strong>
+                    <span class="muted-text">Tudo fica amarrado à aula e à disciplina corretas.</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+{% else %}
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Relatório de frequência</span>
+        <h1>Resumo por turma, disciplina e aluno</h1>
+        <p>Filtre os lançamentos feitos por aula e veja a evolução sem navbar duplicada estragando a tela.</p>
+    </div>
+    <a href="{% url 'core:professor' %}" class="btn btn-secondary btn-compact">Voltar ao painel</a>
+</div>
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="card">
+            <h3 class="widget-title">Filtros</h3>
+            <form method="get" class="dashboard-grid">
+                <div class="form-group">
+                    <label for="filter-classroom">Turma</label>
+                    <select id="filter-classroom" name="classroom">
+                        <option value="">Todas as turmas</option>
+                        {% for classroom in classrooms %}
+                        <option value="{{ classroom.pk }}" {% if filters.classroom == classroom.pk|stringformat:"s" %}selected{% endif %}>{{ classroom.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filter-subject">Disciplina</label>
+                    <select id="filter-subject" name="subject">
+                        <option value="">Todas as disciplinas</option>
+                        {% for subject in subjects %}
+                        <option value="{{ subject.pk }}" {% if filters.subject == subject.pk|stringformat:"s" %}selected{% endif %}>{{ subject.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filter-student">Aluno</label>
+                    <select id="filter-student" name="student">
+                        <option value="">Todos os alunos</option>
+                        {% for student in students %}
+                        <option value="{{ student.pk }}" {% if filters.student == student.pk|stringformat:"s" %}selected{% endif %}>{{ student.full_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="filter-start-date">De</label>
+                    <input type="date" id="filter-start-date" name="start_date" value="{{ filters.start_date }}">
+                </div>
+                <div class="form-group">
+                    <label for="filter-end-date">Até</label>
+                    <input type="date" id="filter-end-date" name="end_date" value="{{ filters.end_date }}">
+                </div>
+                <div class="form-actions form-field-full">
+                    <button type="submit" class="btn btn-primary">Aplicar filtros</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="dashboard-grid stats-grid stats-grid-wide">
+            <article class="card stat-card">
+                <span>Presença média</span>
+                <strong>{{ overall_percentage|default:"-" }}%</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Faltas totais</span>
+                <strong>{{ overall_absences }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Registros</span>
+                <strong>{{ record_count }}</strong>
+            </article>
+        </div>
+
+        <div class="card">
+            <h3 class="widget-title">Faltas por aluno</h3>
+            <div class="table-wrap">
+                <table class="compact-table">
+                    <thead>
+                        <tr><th>Aluno</th><th>Faltas</th><th>Aulas registradas</th><th>Presença</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for item in student_summary %}
+                        <tr>
+                            <td>{{ item.student.full_name }}</td>
+                            <td>{{ item.absences }}</td>
+                            <td>{{ item.possible }}</td>
+                            <td><span class="status-pill {{ item.severity }}">{{ item.percentage }}%</span></td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4">Nenhuma frequência registrada para os filtros selecionados.</td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Resumo rápido</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Filtragem</strong>
+                    <span class="muted-text">Refine por turma, disciplina, aluno ou período.</span>
+                </div>
+                <div>
+                    <strong>Consistência</strong>
+                    <span class="muted-text">Cada registro está vinculado a uma aula existente.</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+{% endif %}
+{% endblock %}

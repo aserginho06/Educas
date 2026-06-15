@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Cronograma da Turma</title>
+    <link rel="stylesheet" href="/assets/css/style.css" />
+</head>
+<body>
+    <header class="page-header">
+        <div class="header-content">
+            <h1>Cronograma da turma {{ classroom.name }}</h1>
+            <a href="{% url 'core:turmas' %}" class="btn btn-secondary">Voltar para Turmas</a>
+        </div>
+    </header>
+
+    <main class="page-main page-main-wide">
+        <section class="card">
+            <div class="schedule-summary-grid">
+                <div>
+                    <strong>{{ classroom.grade_level.name|default:classroom.name }}{% if classroom.section %} - {{ classroom.section }}{% endif %}</strong>
+                    <span>Turma</span>
+                </div>
+                <div>
+                    <strong>{{ classroom.academic_year.name|default:classroom.school_year }}</strong>
+                    <span>Ano letivo</span>
+                </div>
+                <div>
+                    <strong>{{ classroom.get_shift_display }}</strong>
+                    <span>Turno</span>
+                </div>
+                <div>
+                    <strong>{{ classroom.homeroom_name }}</strong>
+                    <span>Professor regente</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2 class="widget-title">Cronograma semanal</h2>
+            {% if rows %}
+                <div class="table-wrap">
+                    <table class="schedule-table">
+                        <thead>
+                            <tr>
+                                <th>Horário</th>
+                                {% for weekday, label in weekday_labels %}
+                                <th>{{ label }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in rows %}
+                            <tr>
+                                <td>{{ row.time }}</td>
+                                {% for cell in row.cells %}
+                                <td>
+                                    {% if cell.schedule %}
+                                        {% if cell.schedule.entry_type == 'break' %}
+                                            <span class="schedule-pill schedule-pill-break">Intervalo</span>
+                                        {% else %}
+                                            <span class="schedule-pill" style="background-color: {{ cell.color|default:'#2563eb' }}">
+                                                {{ cell.schedule.subject.name }}
+                                            </span>
+                                            <div class="schedule-cell-meta">
+                                                <span>{{ cell.schedule.teacher.full_name|default:'Professor nao definido' }}</span>
+                                                {% if cell.schedule.room %}
+                                                    <small>Sala {{ cell.schedule.room }}</small>
+                                                {% endif %}
+                                            </div>
+                                        {% endif %}
+                                    {% else %}
+                                        <span class="muted-text">Livre</span>
+                                    {% endif %}
+                                </td>
+                                {% endfor %}
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p>Este cronograma ainda não possui horários cadastrados.</p>
+            {% endif %}
+        </section>
+    </main>
+
+    <script src="/assets/js/script.js"></script>
+</body>
+</html>

@@ -1,170 +1,126 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Administrador | Educas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body class="app-page">
-    <header class="main-header">
-        <div class="container header-container app-header">
-            <a href="feed.html" class="logo">
-                <img src="assets/img/logo.png" alt="Logo Educas">
-                Educas
-            </a>
-            <div class="header-actions">
-                <a href="profile.html" class="text-link">Meu Perfil</a>
-                <a href="login.html" class="btn btn-secondary btn-compact">Sair</a>
-            </div>
+{% extends "core/base_app.html" %}
+
+{% block title %}Administrador | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Gestão completa</span>
+        <h1>Administrador</h1>
+        <p>Painel compacto, atalhos úteis e menos encenação visual. Gestão de verdade, sem desperdício.</p>
+    </div>
+    <a href="/admin/" class="btn btn-primary btn-compact">Abrir Django Admin</a>
+</div>
+
+<div class="dashboard-grid stats-grid stats-grid-wide">
+    <article class="card stat-card"><span>Usuários</span><strong>{{ total_usuarios }}</strong></article>
+    <article class="card stat-card"><span>Turmas</span><strong>{{ total_turmas }}</strong></article>
+    <article class="card stat-card"><span>Disciplinas</span><strong>{{ total_disciplinas }}</strong></article>
+    <article class="card stat-card"><span>Eventos</span><strong>{{ total_eventos }}</strong></article>
+    <article class="card stat-card"><span>Anos letivos</span><strong>{{ total_anos_letivos }}</strong></article>
+    <article class="card stat-card"><span>Séries</span><strong>{{ total_series }}</strong></article>
+</div>
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="assignment-card-grid shortcut-grid">
+            <a href="/admin/accounts/user/" class="card admin-action"><strong>Usuários</strong><span>Perfis, papéis e ativação.</span></a>
+            <a href="/admin/academics/classroom/" class="card admin-action"><strong>Turmas</strong><span>Estrutura acadêmica sem rodeio.</span></a>
+            <a href="/admin/academics/subject/" class="card admin-action"><strong>Disciplinas</strong><span>Padronização institucional.</span></a>
+            <a href="/admin/academics/academicevent/" class="card admin-action"><strong>Eventos</strong><span>Agenda, provas e prazos.</span></a>
+            <a href="/admin/academics/grade/" class="card admin-action"><strong>Notas</strong><span>Lançamento e acompanhamento.</span></a>
+            <a href="/admin/engagement/post/" class="card admin-action"><strong>Feed</strong><span>Moderação de publicações.</span></a>
         </div>
-    </header>
 
-    <main class="app-container">
-        <aside class="sidebar-left">
-            <div class="card sidebar-menu">
-                <ul>
-                    <li><a href="feed.html"><span aria-hidden="true">🏠</span> Feed Geral</a></li>
-                    <li><a href="profile.html"><span aria-hidden="true">👤</span> Meu Perfil</a></li>
-                    <li><a href="turmas.html"><span aria-hidden="true">👥</span> Minhas Turmas</a></li>
-                    <li><a href="notas.html"><span aria-hidden="true">📊</span> Boletim & Notas</a></li>
-                    <li><a href="calendario.html"><span aria-hidden="true">📅</span> Calendario</a></li>
-                    <li><a href="administrador.html" class="active"><span aria-hidden="true">⚙️</span> Administrador</a></li>
-                </ul>
-            </div>
-        </aside>
-
-        <section class="app-main">
-            <div class="page-heading page-heading-row">
-                <div>
-                    <span class="page-kicker">Gestao completa</span>
-                    <h1>Administrador</h1>
-                    <p>Gerencie usuarios, turmas, disciplinas, eventos, notas e conteudos publicados no Educas.</p>
-                </div>
-                <a href="/admin/" class="btn btn-primary btn-compact">Abrir Django Admin</a>
-            </div>
-
-            <div class="dashboard-grid">
-                <div class="card metric-card">
-                    <span class="metric-label">Usuarios</span>
-                    <strong>{{ total_usuarios }}</strong>
-                    <span class="metric-status positive">Cadastrados</span>
-                </div>
-                <div class="card metric-card">
-                    <span class="metric-label">Turmas</span>
-                    <strong>{{ total_turmas }}</strong>
-                    <span class="metric-status positive">Ativas</span>
-                </div>
-                <div class="card metric-card">
-                    <span class="metric-label">Disciplinas</span>
-                    <strong>{{ total_disciplinas }}</strong>
-                    <span class="metric-status positive">No sistema</span>
-                </div>
-                <div class="card metric-card">
-                    <span class="metric-label">Eventos</span>
-                    <strong>{{ total_eventos }}</strong>
-                    <span class="metric-status warning">Agenda</span>
-                </div>
-            </div>
-
-            <div class="admin-action-grid">
-                <a href="/admin/core/usuariosistema/" class="card admin-action">
-                    <strong>Usuarios</strong>
-                    <span>Adicionar, editar, ativar ou remover acessos.</span>
-                </a>
-                <a href="/admin/core/turma/" class="card admin-action">
-                    <strong>Turmas</strong>
-                    <span>Organizar turmas, ano letivo e periodo.</span>
-                </a>
-                <a href="/admin/core/disciplina/" class="card admin-action">
-                    <strong>Disciplinas</strong>
-                    <span>Relacionar professores, horarios e turmas.</span>
-                </a>
-                <a href="/admin/core/eventoacademico/" class="card admin-action">
-                    <strong>Eventos</strong>
-                    <span>Controlar provas, entregas, aulas e reunioes.</span>
-                </a>
-                <a href="/admin/core/nota/" class="card admin-action">
-                    <strong>Notas</strong>
-                    <span>Lancar e consultar avaliacoes dos alunos.</span>
-                </a>
-                <a href="/admin/core/postfeed/" class="card admin-action">
-                    <strong>Feed</strong>
-                    <span>Gerenciar comunicados e materiais publicados.</span>
-                </a>
-            </div>
-
+        <div class="dashboard-grid">
             <div class="card">
-                <h3 class="widget-title">Usuarios Recentes</h3>
+                <h3 class="widget-title">Usuários recentes</h3>
                 <div class="table-wrap">
                     <table class="compact-table">
                         <thead>
-                            <tr>
-                                <th>Nome</th>
-                                <th>E-mail</th>
-                                <th>Perfil</th>
-                                <th>Turma</th>
-                                <th>Status</th>
-                            </tr>
+                            <tr><th>Nome</th><th>E-mail</th><th>Papel</th><th>Status</th></tr>
                         </thead>
                         <tbody>
                             {% for usuario in usuarios %}
                             <tr>
-                                <td>{{ usuario.nome }}</td>
+                                <td>{{ usuario.full_name|default:usuario.email }}</td>
                                 <td>{{ usuario.email }}</td>
-                                <td>{{ usuario.get_perfil_display }}</td>
-                                <td>{{ usuario.turma|default:"-" }}</td>
-                                <td>{% if usuario.ativo %}<span class="status-pill approved">Ativo</span>{% else %}<span class="status-pill attention">Inativo</span>{% endif %}</td>
+                                <td>{{ usuario.get_role_display }}</td>
+                                <td>{% if usuario.is_active %}<span class="status-pill approved">Ativo</span>{% else %}<span class="status-pill attention">Inativo</span>{% endif %}</td>
                             </tr>
                             {% empty %}
+                            <tr><td colspan="4">Nenhum usuário cadastrado ainda.</td></tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="widget-title">Acessos temporários</h3>
+                <div class="table-wrap">
+                    <table class="compact-table">
+                        <thead>
+                            <tr><th>Papel</th><th>Login</th><th>Código</th><th>Senha</th></tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in teacher_logins %}
                             <tr>
-                                <td colspan="5">Nenhum usuario cadastrado ainda.</td>
+                                <td>Professor</td>
+                                <td>{{ usuario.email }}</td>
+                                <td>{{ usuario.teacher_profile.employee_code|default:"-" }}</td>
+                                <td>{{ teacher_temp_password }}</td>
+                            </tr>
+                            {% endfor %}
+                            {% for usuario in student_logins %}
+                            <tr>
+                                <td>Aluno</td>
+                                <td>{{ usuario.email }}</td>
+                                <td>{{ usuario.student_profile.registration_code|default:"-" }}</td>
+                                <td>{{ student_temp_password }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>
                     </table>
                 </div>
             </div>
-        </section>
+        </div>
+    </div>
 
-        <aside class="sidebar-right">
-            <div class="card">
-                <h3 class="widget-title">Proximos Eventos</h3>
-                <div class="summary-list">
-                    {% for evento in eventos %}
-                    <div>
-                        <strong>{{ evento.data|date:"d M" }}</strong>
-                        <span class="muted-text">{{ evento.titulo }}</span>
-                    </div>
-                    {% empty %}
-                    <div>
-                        <strong>Agenda vazia</strong>
-                        <span class="muted-text">Cadastre eventos pelo Django Admin.</span>
-                    </div>
-                    {% endfor %}
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Próximos eventos</h3>
+            <div class="summary-list">
+                {% for evento in eventos %}
+                <div>
+                    <strong>{{ evento.starts_at|date:"d M" }}</strong>
+                    <span class="muted-text">{{ evento.title }}</span>
                 </div>
-            </div>
-
-            <div class="card">
-                <h3 class="widget-title">Posts do Feed</h3>
-                <div class="summary-list">
-                    {% for post in posts %}
-                    <div>
-                        <strong>{{ post.autor }}</strong>
-                        <span class="muted-text">{{ post.categoria }}</span>
-                    </div>
-                    {% empty %}
-                    <div>
-                        <strong>Nenhum post</strong>
-                        <span class="muted-text">Publique conteudos pelo admin.</span>
-                    </div>
-                    {% endfor %}
+                {% empty %}
+                <div>
+                    <strong>Agenda vazia</strong>
+                    <span class="muted-text">Cadastre eventos pelo Django Admin.</span>
                 </div>
+                {% endfor %}
             </div>
-        </aside>
-    </main>
+        </div>
 
-    <script src="assets/js/script.js"></script>
-</body>
-</html>
+        <div class="card">
+            <h3 class="widget-title">Feed</h3>
+            <div class="summary-list">
+                {% for post in posts %}
+                <div>
+                    <strong>{{ post.author.full_name|default:post.author.email }}</strong>
+                    <span class="muted-text">{{ post.get_post_type_display }}</span>
+                </div>
+                {% empty %}
+                <div>
+                    <strong>Nenhum post</strong>
+                    <span class="muted-text">Publique conteúdos pelo admin.</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </aside>
+</section>
+{% endblock %}

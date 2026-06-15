@@ -1,0 +1,16 @@
+admin: login=True email=admin@educas.com
+admin: /administrador.html status=200
+admin: /feed.html status=200
+admin: /turmas.html status=200
+admin: /calendario.html status=200
+admin: /profile.html status=200
+admin: /admin/ status=200
+teacher: login=True email=fernando.bastos@educas.edu.br
+teacher: /professor.html status=200
+teacher: /feed.html status=200
+teacher: /aulas.html status=200
+teacher: /attendance.html status=200
+teacher: /grades_batch.html status=200
+teacher: /professor/atividades.html status=200
+teacher: /calendario.html status=200
+teacher: /profile.html status=200

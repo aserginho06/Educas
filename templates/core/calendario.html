@@ -1,133 +1,79 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calendario | Educas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body class="app-page">
-    <header class="main-header">
-        <div class="container header-container app-header">
-            <a href="feed.html" class="logo">
-                <img src="assets/img/logo.png" alt="Logo Educas">
-                Educas
-            </a>
-            <div class="header-actions">
-                <a href="profile.html" class="text-link">Meu Perfil</a>
-                <a href="login.html" class="btn btn-secondary btn-compact">Sair</a>
+{% extends "core/base_app.html" %}
+
+{% block title %}Calendário | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading">
+    <span class="page-kicker">Visão de prazos e eventos</span>
+    <h1>Calendário acadêmico</h1>
+    <p>Cores por urgência, leitura direta e tabela com respiro. Finalmente dá para usar isso sem raiva.</p>
+</div>
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Legenda</span>
+                    <h2>Status dos eventos</h2>
+                </div>
+            </div>
+            <div class="legend-row">
+                <span class="legend-pill legend-future">Futura</span>
+                <span class="legend-pill legend-soon">Próxima</span>
+                <span class="legend-pill legend-closed">Encerrada</span>
             </div>
         </div>
-    </header>
 
-    <main class="app-container">
-        <aside class="sidebar-left">
-            <div class="card sidebar-menu">
-                <ul>
-                    <li><a href="feed.html"><span aria-hidden="true">🏠</span> Feed Geral</a></li>
-                    <li><a href="profile.html"><span aria-hidden="true">👤</span> Meu Perfil</a></li>
-                    <li><a href="turmas.html"><span aria-hidden="true">👥</span> Minhas Turmas</a></li>
-                    <li><a href="notas.html"><span aria-hidden="true">📊</span> Boletim & Notas</a></li>
-                    <li><a href="calendario.html" class="active"><span aria-hidden="true">📅</span> Calendario</a></li>
-                    <li><a href="administrador.html"><span aria-hidden="true">⚙️</span> Administrador</a></li>
-                </ul>
+        <div class="card">
+            <div class="table-wrap">
+                <table class="compact-table">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Status</th>
+                            <th>Título</th>
+                            <th>Turma</th>
+                            <th>Disciplina</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for event in events %}
+                        <tr>
+                            <td>{{ event.starts_at|date:"d/m/Y H:i" }}</td>
+                            <td><span class="legend-pill {{ event.urgency_class }}">{{ event.urgency_label }}</span></td>
+                            <td>{{ event.title }}</td>
+                            <td>{{ event.classroom.name|default:"Geral" }}</td>
+                            <td>
+                                {% if event.subject %}
+                                <span class="subject-inline-chip"><span class="subject-dot" style="background: {{ event.subject_color }};"></span>{{ event.subject.name }}</span>
+                                {% else %}
+                                -
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5">Nenhum evento publicado ainda.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        </aside>
+        </div>
+    </div>
 
-        <section class="app-main">
-            <div class="page-heading page-heading-row">
-                <div>
-                    <span class="page-kicker">Agenda academica</span>
-                    <h1>Calendario</h1>
-                    <p>Organize provas, entregas, eventos escolares e lembretes importantes.</p>
-                </div>
-                <button class="btn btn-primary btn-compact" type="button" data-calendar-add>Novo Evento</button>
-            </div>
-
-            <div class="card calendar-large-card">
-                <div class="calendar-header">
-                    <div>
-                        <span class="calendar-eyebrow">Visao mensal</span>
-                        <h3 data-calendar-title>Maio 2026</h3>
-                    </div>
-                    <div class="calendar-controls" aria-label="Controles do calendario">
-                        <button type="button" data-calendar-prev aria-label="Mes anterior">‹</button>
-                        <button type="button" data-calendar-next aria-label="Proximo mes">›</button>
-                    </div>
-                </div>
-                <div class="large-calendar" data-calendar="large" aria-label="Calendario completo de Maio de 2026">
-                    <span class="weekday">Seg</span>
-                    <span class="weekday">Ter</span>
-                    <span class="weekday">Qua</span>
-                    <span class="weekday">Qui</span>
-                    <span class="weekday">Sex</span>
-                    <span class="weekday">Sab</span>
-                    <span class="weekday">Dom</span>
-                    <div class="muted-day">27</div>
-                    <div class="muted-day">28</div>
-                    <div class="muted-day">29</div>
-                    <div class="muted-day">30</div>
-                    <div>1</div>
-                    <div>2</div>
-                    <div>3</div>
-                    <div>4</div>
-                    <div>5</div>
-                    <div class="today">6<span>Hoje</span></div>
-                    <div>7</div>
-                    <div class="event-day">8<span>Simulado</span></div>
-                    <div>9</div>
-                    <div>10</div>
-                    <div>11</div>
-                    <div>12</div>
-                    <div>13</div>
-                    <div>14</div>
-                    <div class="event-day">15<span>Historia</span></div>
-                    <div>16</div>
-                    <div>17</div>
-                    <div>18</div>
-                    <div>19</div>
-                    <div>20<span>Lista</span></div>
-                    <div>21</div>
-                    <div>22</div>
-                    <div>23</div>
-                    <div>24</div>
-                    <div>25</div>
-                    <div>26</div>
-                    <div>27</div>
-                    <div>28</div>
-                    <div class="event-day">29<span>Biologia</span></div>
-                    <div>30</div>
-                    <div>31</div>
-                </div>
-            </div>
-        </section>
-
-        <aside class="sidebar-right">
-            <div class="card">
-                <h3 class="widget-title">Agenda do Mes</h3>
-                <div class="summary-list agenda-list" data-calendar-events>
-                    <div>
-                        <strong>08 Mai</strong>
-                        <span class="muted-text">Simulado de Matematica</span>
-                    </div>
-                    <div>
-                        <strong>15 Mai</strong>
-                        <span class="muted-text">Entrega de Historia</span>
-                    </div>
-                    <div>
-                        <strong>20 Mai</strong>
-                        <span class="muted-text">Lista de Funcoes</span>
-                    </div>
-                    <div>
-                        <strong>29 Mai</strong>
-                        <span class="muted-text">Relatorio de Biologia</span>
-                    </div>
-                </div>
-            </div>
-        </aside>
-    </main>
-
-    <script src="assets/js/script.js"></script>
-</body>
-</html>
+    <aside class="app-content-aside">
+        <div class="dashboard-grid stats-grid">
+            <article class="card stat-card">
+                <span>Eventos</span>
+                <strong>{{ events|length }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Perfil</span>
+                <strong>{{ request.user.role_label }}</strong>
+            </article>
+        </div>
+    </aside>
+</section>
+{% endblock %}

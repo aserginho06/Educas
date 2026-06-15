@@ -1,0 +1,78 @@
+{% extends "core/base_app.html" %}
+
+{% block title %}Atividades | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Entrega e correção</span>
+        <h1>Atividades da turma</h1>
+        <p>A lista virou grid de verdade. Sem espaço morto, sem tabela espremida, sem aquele visual de planilha cansada.</p>
+    </div>
+    <a href="{% url 'core:assignment_create' %}" class="btn btn-primary btn-compact">Nova atividade</a>
+</div>
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="assignment-card-grid">
+            {% for assignment in assignments %}
+            <article class="card assignment-overview-card">
+                <div class="assignment-overview-top">
+                    <div>
+                        <span class="page-kicker">{{ assignment.subject.name }}</span>
+                        <h3>{{ assignment.title }}</h3>
+                    </div>
+                    {% if assignment.is_closed %}
+                    <span class="status-pill attention">Encerrada</span>
+                    {% else %}
+                    <span class="status-pill approved">Aberta</span>
+                    {% endif %}
+                </div>
+                <div class="assignment-overview-meta">
+                    <span>{{ assignment.classroom.name }}</span>
+                    <span>Prazo: {{ assignment.due_at|date:"d/m/Y H:i" }}</span>
+                    <span>{{ assignment.submission_count }} entrega(s)</span>
+                </div>
+                <p>{{ assignment.description|default:"Sem descrição detalhada."|truncatechars:180 }}</p>
+                <div class="card-actions">
+                    <a href="{% url 'core:assignment_detail' assignment.id %}" class="btn btn-secondary btn-compact">Ver detalhes</a>
+                    <a href="{% url 'core:assignment_edit' assignment.id %}" class="btn btn-tertiary btn-compact">Editar</a>
+                </div>
+            </article>
+            {% empty %}
+            <div class="empty-state">
+                <strong>Nenhuma atividade criada.</strong>
+                <p>Crie a primeira e pare de deixar essa área oca.</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="dashboard-grid stats-grid">
+            <article class="card stat-card">
+                <span>Total</span>
+                <strong>{{ assignments|length }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Abertas</span>
+                <strong>{{ open_assignment_count }}</strong>
+            </article>
+        </div>
+
+        <div class="card">
+            <h3 class="widget-title">Fluxo melhorado</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Leitura em cards</strong>
+                    <span class="muted-text">Bate o olho e você já vê status, prazo e turma.</span>
+                </div>
+                <div>
+                    <strong>Ação sem ruído</strong>
+                    <span class="muted-text">Editar e detalhar ficaram onde deveriam estar.</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+{% endblock %}

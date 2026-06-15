@@ -1,0 +1,171 @@
+{% extends "core/base_app.html" %}
+
+{% block title %}Aulas | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Operação acadêmica</span>
+        <h1>Registro de aulas</h1>
+        <p>Formulário compacto, histórico útil e filtros rápidos. Do jeito que isso já devia estar.</p>
+    </div>
+    <a href="{% url 'core:professor' %}" class="btn btn-secondary btn-compact">Voltar ao painel</a>
+</div>
+
+{% if messages %}
+<div class="card app-alert-stack">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">{% if editing %}Edição{% else %}Novo registro{% endif %}</span>
+                    <h2>{% if editing %}Editar aula{% else %}Nova aula{% endif %}</h2>
+                </div>
+                {% if editing %}
+                <a href="{% url 'core:aulas' %}" class="btn btn-secondary btn-compact">Cancelar edição</a>
+                {% endif %}
+            </div>
+
+            <form method="post">
+                {% csrf_token %}
+                <div class="dashboard-grid">
+                    <div class="form-field">
+                        <label for="id_lesson-classroom">Turma</label>
+                        {{ form.classroom }}
+                        {% if form.classroom.errors %}<p class="field-error">{{ form.classroom.errors|striptags }}</p>{% endif %}
+                    </div>
+                    <div class="form-field">
+                        <label for="id_lesson-subject">Disciplina</label>
+                        {{ form.subject }}
+                        {% if form.subject.errors %}<p class="field-error">{{ form.subject.errors|striptags }}</p>{% endif %}
+                    </div>
+                    <div class="form-field">
+                        <label for="id_lesson-date">Data</label>
+                        {{ form.date }}
+                        {% if form.date.errors %}<p class="field-error">{{ form.date.errors|striptags }}</p>{% endif %}
+                    </div>
+                    <div class="form-field">
+                        <label for="id_lesson-quantidade_aulas">Quantidade de aulas</label>
+                        {{ form.quantidade_aulas }}
+                        {% if form.quantidade_aulas.errors %}<p class="field-error">{{ form.quantidade_aulas.errors|striptags }}</p>{% endif %}
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label for="id_lesson-conteudo">Conteúdo ministrado</label>
+                        {{ form.conteudo }}
+                        {% if form.conteudo.errors %}<p class="field-error">{{ form.conteudo.errors|striptags }}</p>{% endif %}
+                    </div>
+                    <div class="form-field form-field-full">
+                        <label for="id_lesson-atividade">Atividade realizada</label>
+                        {{ form.atividade }}
+                        {% if form.atividade.errors %}<p class="field-error">{{ form.atividade.errors|striptags }}</p>{% endif %}
+                    </div>
+                </div>
+                {% if form.non_field_errors %}
+                <div class="field-error">{{ form.non_field_errors }}</div>
+                {% endif %}
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Salvar aula</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Filtro rápido</span>
+                    <h2>Buscar registros</h2>
+                </div>
+            </div>
+            <form method="get" class="dashboard-grid dashboard-grid-tight">
+                <div class="form-field">
+                    <label for="filter-classroom">Turma</label>
+                    <select id="filter-classroom" name="classroom">
+                        <option value="">Todas as turmas</option>
+                        {% for classroom in available_classrooms %}
+                        <option value="{{ classroom.pk }}" {% if classroom_filter == classroom.pk %}selected{% endif %}>{{ classroom.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-field">
+                    <label for="filter-date">Data</label>
+                    <input type="date" id="filter-date" name="date" value="{{ date_filter|default_if_none:'' }}">
+                </div>
+                <div class="form-field form-field-actions">
+                    <button type="submit" class="btn btn-primary">Aplicar filtro</button>
+                </div>
+            </form>
+        </div>
+
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Histórico</span>
+                    <h2>Aulas registradas</h2>
+                </div>
+                <span class="section-counter">{{ lessons|length }} item(ns)</span>
+            </div>
+            <div class="lesson-history-grid">
+                {% for lesson in lessons %}
+                <article class="lesson-history-card">
+                    <div class="lesson-history-top">
+                        <div>
+                            <strong>{{ lesson.subject.name }}</strong>
+                            <span>{{ lesson.classroom.name }}</span>
+                        </div>
+                        <span class="status-pill approved">{{ lesson.date|date:"d/m/Y" }}</span>
+                    </div>
+                    <p>{{ lesson.conteudo|truncatechars:180 }}</p>
+                    <div class="lesson-history-meta">
+                        <span>{{ lesson.quantidade_aulas }} aula(s)</span>
+                        <span>{{ lesson.atividade|default:"Sem atividade registrada."|truncatechars:80 }}</span>
+                    </div>
+                    <div class="card-actions">
+                        <a href="{% url 'core:editar_aula' lesson.id %}" class="btn btn-tertiary btn-compact">Editar</a>
+                        <a href="{% url 'core:lesson_attendance' lesson.id %}" class="btn btn-secondary btn-compact">Frequência</a>
+                    </div>
+                </article>
+                {% empty %}
+                <div class="empty-state">
+                    <strong>Nenhuma aula cadastrada.</strong>
+                    <p>Use o formulário acima para registrar sua primeira aula.</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="dashboard-grid stats-grid">
+            <article class="card stat-card">
+                <span>Turmas ativas</span>
+                <strong>{{ available_classrooms|length }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Registros</span>
+                <strong>{{ lessons|length }}</strong>
+            </article>
+        </div>
+
+        <div class="card">
+            <h3 class="widget-title">Como usar melhor</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Preencha conteúdo e atividade</strong>
+                    <span class="muted-text">Isso alimenta frequência, histórico e consulta futura.</span>
+                </div>
+                <div>
+                    <strong>Filtre por data</strong>
+                    <span class="muted-text">Evita caça cega em lista longa.</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+{% endblock %}

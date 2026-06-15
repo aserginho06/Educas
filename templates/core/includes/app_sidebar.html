@@ -1,0 +1,99 @@
+{% load static %}
+<aside class="app-sidebar" data-app-sidebar>
+    <div class="app-sidebar-top">
+        <a href="{% url 'core:feed' %}" class="logo app-sidebar-logo">
+            <img src="{% static 'img/logo.png' %}" alt="Logo Educas">
+            <span>
+                Educas
+                <small>Campus digital</small>
+            </span>
+        </a>
+
+        <div class="app-user-chip">
+            <strong>{{ request.user.full_name|default:request.user.email }}</strong>
+            <span>{{ request.user.role_label }}</span>
+        </div>
+    </div>
+
+    <nav class="app-sidebar-nav" aria-label="Navegação principal">
+        {% with current=request.resolver_match.url_name %}
+        <a href="{% if request.user.role == 'teacher' %}{% url 'core:professor' %}{% elif request.user.role == 'student' %}{% url 'core:aluno' %}{% elif request.user.role == 'admin' %}{% url 'core:administrador' %}{% else %}{% url 'core:feed' %}{% endif %}" class="{% if current == 'professor' or current == 'aluno' or current == 'administrador' or current == 'administrador_html' %}active{% endif %}">
+            <span class="nav-icon nav-icon-grid"></span>
+            <span>Dashboard</span>
+        </a>
+        <a href="{% url 'core:feed' %}" class="{% if current == 'feed' %}active{% endif %}">
+            <span class="nav-icon nav-icon-feed"></span>
+            <span>Feed</span>
+        </a>
+        <a href="{% url 'core:turmas' %}" class="{% if current == 'turmas' or current == 'classroom_schedule' %}active{% endif %}">
+            <span class="nav-icon nav-icon-classroom"></span>
+            <span>Turmas</span>
+        </a>
+        {% if request.user.role == 'teacher' or request.user.role == 'admin' %}
+        <a href="{% url 'core:aulas' %}" class="{% if current == 'aulas' or current == 'editar_aula' or current == 'lesson_attendance' %}active{% endif %}">
+            <span class="nav-icon nav-icon-lesson"></span>
+            <span>Aulas</span>
+        </a>
+        <a href="{% url 'core:attendance' %}" class="{% if current == 'attendance' %}active{% endif %}">
+            <span class="nav-icon nav-icon-attendance"></span>
+            <span>Frequência</span>
+        </a>
+        <a href="{% url 'core:grades_batch' %}" class="{% if current == 'grades_batch' %}active{% endif %}">
+            <span class="nav-icon nav-icon-grade"></span>
+            <span>Notas</span>
+        </a>
+        {% elif request.user.role == 'student' %}
+        <a href="{% url 'core:notas' %}" class="{% if current == 'notas' %}active{% endif %}">
+            <span class="nav-icon nav-icon-grade"></span>
+            <span>Notas</span>
+        </a>
+        {% endif %}
+        {% if request.user.role == 'teacher' %}
+        <a href="{% url 'core:assignment_list' %}" class="{% if current == 'assignment_list' or current == 'assignment_create' or current == 'assignment_edit' or current == 'assignment_detail' %}active{% endif %}">
+            <span class="nav-icon nav-icon-activity"></span>
+            <span>Atividades</span>
+        </a>
+        {% else %}
+        <a href="{% url 'core:student_assignments' %}" class="{% if current == 'student_assignments' or current == 'student_assignment_detail' %}active{% endif %}">
+            <span class="nav-icon nav-icon-activity"></span>
+            <span>Atividades</span>
+        </a>
+        {% endif %}
+        <a href="{% url 'core:calendario' %}" class="{% if current == 'calendario' %}active{% endif %}">
+            <span class="nav-icon nav-icon-calendar"></span>
+            <span>Calendário</span>
+        </a>
+        <a href="{% url 'core:notifications' %}" class="{% if current == 'notifications' %}active{% endif %}">
+            <span class="nav-icon nav-icon-notification"></span>
+            <span>Notificações</span>
+        </a>
+        <a href="{% url 'core:perfil' %}" class="{% if current == 'perfil' %}active{% endif %}">
+            <span class="nav-icon nav-icon-profile"></span>
+            <span>Perfil</span>
+        </a>
+        <a href="{% url 'core:perfil' %}">
+            <span class="nav-icon nav-icon-settings"></span>
+            <span>Configurações</span>
+        </a>
+        {% endwith %}
+    </nav>
+
+    <div class="app-sidebar-bottom">
+        {% if request.user.role == 'student' %}
+        <form method="post" action="{% url 'core:turmas' %}" class="sidebar-join-form">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="join_classroom">
+            <label for="sidebar-access-code">Entrar em Turma</label>
+            <div class="sidebar-join-row">
+                <input id="sidebar-access-code" type="text" name="join-access_code" maxlength="12" placeholder="Código">
+                <button type="submit" class="btn btn-primary btn-compact">Entrar</button>
+            </div>
+        </form>
+        {% endif %}
+
+        <a href="{% url 'core:logout' %}" class="app-logout-link">
+            <span class="nav-icon nav-icon-logout"></span>
+            <span>Sair</span>
+        </a>
+    </div>
+</aside>

@@ -1,0 +1,280 @@
+
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feed | Educas</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/css/style.css">
+</head>
+<body class="app-page shell-page">
+    <div class="app-shell">
+        
+<aside class="app-sidebar" data-app-sidebar>
+    <div class="app-sidebar-top">
+        <a href="http://local.invalid/feed.html" class="logo app-sidebar-logo">
+            <img src="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/img/logo.png" alt="Logo Educas">
+            <span>
+                Educas
+                <small>Campus digital</small>
+            </span>
+        </a>
+
+        <div class="app-user-chip">
+            <strong>Administrador Educas</strong>
+            <span>Administrador</span>
+        </div>
+    </div>
+
+    <nav class="app-sidebar-nav" aria-label="Navegação principal">
+        
+        <a href="http://local.invalid/administrador/" class="">
+            <span class="nav-icon nav-icon-grid"></span>
+            <span>Dashboard</span>
+        </a>
+        <a href="http://local.invalid/feed.html" class="active">
+            <span class="nav-icon nav-icon-feed"></span>
+            <span>Feed</span>
+        </a>
+        <a href="http://local.invalid/turmas.html" class="">
+            <span class="nav-icon nav-icon-classroom"></span>
+            <span>Turmas</span>
+        </a>
+        
+        <a href="http://local.invalid/aulas.html" class="">
+            <span class="nav-icon nav-icon-lesson"></span>
+            <span>Aulas</span>
+        </a>
+        <a href="http://local.invalid/attendance.html" class="">
+            <span class="nav-icon nav-icon-attendance"></span>
+            <span>Frequência</span>
+        </a>
+        <a href="http://local.invalid/grades_batch.html" class="">
+            <span class="nav-icon nav-icon-grade"></span>
+            <span>Notas</span>
+        </a>
+        
+        
+        <a href="http://local.invalid/atividades.html" class="">
+            <span class="nav-icon nav-icon-activity"></span>
+            <span>Atividades</span>
+        </a>
+        
+        <a href="http://local.invalid/calendario.html" class="">
+            <span class="nav-icon nav-icon-calendar"></span>
+            <span>Calendário</span>
+        </a>
+        <a href="http://local.invalid/notificacoes.html" class="">
+            <span class="nav-icon nav-icon-notification"></span>
+            <span>Notificações</span>
+        </a>
+        <a href="http://local.invalid/profile.html" class="">
+            <span class="nav-icon nav-icon-profile"></span>
+            <span>Perfil</span>
+        </a>
+        <a href="http://local.invalid/profile.html">
+            <span class="nav-icon nav-icon-settings"></span>
+            <span>Configurações</span>
+        </a>
+        
+    </nav>
+
+    <div class="app-sidebar-bottom">
+        
+
+        <a href="http://local.invalid/logout/" class="app-logout-link">
+            <span class="nav-icon nav-icon-logout"></span>
+            <span>Sair</span>
+        </a>
+    </div>
+</aside>
+
+
+        <div class="app-shell-body">
+            <header class="app-mobile-header">
+                <button class="app-shell-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" data-sidebar-toggle>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+                <a href="http://local.invalid/feed.html" class="logo app-mobile-logo">
+                    <img src="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/img/logo.png" alt="Logo Educas">
+                    Educas
+                </a>
+                <a href="http://local.invalid/profile.html" class="app-mobile-user">Administrador</a>
+            </header>
+
+            <main class="app-shell-main">
+                
+<div class="page-heading">
+    <span class="page-kicker">Comunicação acadêmica</span>
+    <h1>Feed central</h1>
+    <p>Agora o mural usa espaço de verdade, organiza o que importa e para de parecer remendo.</p>
+</div>
+
+
+
+<section class="app-content-grid feed-layout">
+    <div class="app-content-primary">
+        
+        <div class="card composer-card">
+            <div class="composer-heading">
+                <div>
+                    <span class="page-kicker">Nova postagem</span>
+                    <h2>Publicar no mural</h2>
+                </div>
+                <div class="composer-actions">
+                    <button type="button" class="btn btn-secondary btn-compact" data-ai-review-btn>Revisar com IA</button>
+                    <button type="submit" form="feed-post-form" class="btn btn-primary btn-compact">Publicar</button>
+                </div>
+            </div>
+            <form id="feed-post-form" method="post" enctype="multipart/form-data" class="contact-form ajax-post-form" data-create-post-url="/feed.html" data-ai-review-url="/feed/review-ai/">
+                <input type="hidden" name="csrfmiddlewaretoken" value="gFidfo1qfT3PwjpJ2DQjKmvGdFbgJ5ekqn594QPIlAWL34VKvVHdPvFC0wvR80El">
+                <input type="hidden" name="action" value="create_post">
+                <div class="form-message muted-text" data-post-form-message>
+                    
+                </div>
+                <div class="composer-form-grid">
+                    <div class="form-group">
+                        <label for="id_post-classroom">Turma</label>
+                        <select name="post-classroom" required id="id_post-classroom">
+  <option value="" selected>---------</option>
+
+  <option value="1">2EM-TESTE A - 2026</option>
+
+</select>
+                        
+                    </div>
+                    <div class="form-group">
+                        <label for="id_post-subject">Disciplina</label>
+                        <select name="post-subject" id="id_post-subject">
+  <option value="" selected>---------</option>
+
+  <option value="1">MATDEMO - Matematica Demo</option>
+
+</select>
+                        
+                    </div>
+                    <div class="form-group">
+                        <label for="id_post-post_type">Tipo</label>
+                        <select name="post-post_type" id="id_post-post_type">
+  <option value="announcement">Aviso</option>
+
+  <option value="material">Material</option>
+
+  <option value="discussion" selected>Discussao</option>
+
+  <option value="event">Evento</option>
+
+</select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_post-title">Título</label>
+                        <input type="text" name="post-title" placeholder="Ex.: Material da aula de hoje" maxlength="140" required id="id_post-title">
+                        
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="id_post-content">Mensagem</label>
+                    <textarea name="post-content" cols="40" rows="4" placeholder="Escreva o aviso, material ou orientacao." required id="id_post-content">
+</textarea>
+                    
+                </div>
+                <div class="composer-form-grid composer-form-grid-bottom">
+                    <div class="form-group file-upload-field" data-file-upload>
+                        <label for="id_post-attachment">Anexo</label>
+                        <div class="file-upload-box">
+                            <input type="file" name="post-attachment" id="id_post-attachment">
+                            <div class="file-upload-copy">
+                                <strong>Arraste um arquivo ou clique para selecionar</strong>
+                                <span data-file-upload-text>Nenhum arquivo selecionado</span>
+                            </div>
+                        </div>
+                        
+                    </div>
+                    <div class="form-group form-checkbox-panel">
+                        <label for="id_post-is_pinned">Fixar no topo</label>
+                        <div class="toggle-line">
+                            <input type="checkbox" name="post-is_pinned" id="id_post-is_pinned">
+                            <span>Destaque esse aviso para a turma.</span>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+
+        <div data-feed-list class="stack-grid">
+            
+            <article class="card empty-state-card">
+                <h3 class="widget-title">Feed vazio</h3>
+                <p data-feed-empty-state>Ninguém publicou nada ainda. Pelo menos agora o espaço presta.</p>
+            </article>
+            
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card calendar-card">
+            <div class="calendar-header">
+                <div>
+                    <span class="calendar-eyebrow">Agenda rápida</span>
+                    <h3 data-calendar-title>Mês atual</h3>
+                </div>
+                <div class="calendar-actions">
+                    <div class="calendar-controls" aria-label="Controles do calendário">
+                        <button type="button" data-calendar-prev aria-label="Mês anterior">&#8249;</button>
+                        <button type="button" data-calendar-next aria-label="Próximo mês">&#8250;</button>
+                    </div>
+                    <a href="http://local.invalid/calendario.html" class="calendar-link">Abrir</a>
+                </div>
+            </div>
+            <div class="mini-calendar" data-calendar="mini" aria-label="Calendário lateral"></div>
+            <div class="calendar-events" data-calendar-events></div>
+        </div>
+
+        <div class="dashboard-grid stats-grid">
+            <article class="card stat-card">
+                <span>Turmas</span>
+                <strong>1</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Perfil</span>
+                <strong>Administrador</strong>
+            </article>
+        </div>
+
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Próximas entregas</span>
+                    <h3 class="widget-title">Atividades</h3>
+                </div>
+            </div>
+            <div class="summary-list">
+                
+                <div>
+                    <strong>Sem atividades</strong>
+                    <span class="muted-text">Nenhuma atividade cadastrada.</span>
+                </div>
+                
+            </div>
+        </div>
+    </aside>
+</section>
+
+            </main>
+        </div>
+    </div>
+
+    <div class="app-shell-overlay" data-sidebar-overlay></div>
+
+    
+<script id="calendar-events-data" type="application/json">[]</script>
+
+    <script src="file:///C:/Users/55869/Documents/Educas/educas_tds_web_aplication/assets/js/script.js"></script>
+</body>
+</html>

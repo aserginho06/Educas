@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notificacoes | Educas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-page">
+    <header class="main-header">
+        <div class="container header-container app-header">
+            <a href="/aluno.html" class="logo">
+                <img src="/assets/img/logo.png" alt="Logo Educas">
+                Educas
+            </a>
+            <nav class="navbar navbar-static" aria-label="Navegacao principal">
+                <ul>
+                    <li><a href="/aluno.html">Painel</a></li>
+                    <li><a href="/notificacoes.html" class="active">Notificacoes</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="/profile.html" class="text-link">Meu perfil</a>
+                <a href="/logout/" class="btn btn-secondary btn-compact">Sair</a>
+            </div>
+        </div>
+    </header>
+    <main class="app-container">
+        <section class="app-main">
+            <div class="page-heading">
+                <span class="page-kicker">Notificacoes</span>
+                <h1>Atualizacoes e alertas</h1>
+                <p>Veja as notificações recentes sobre atividades e entregas.</p>
+            </div>
+            <div class="card">
+                <div class="summary-list">
+                    {% for notification in notifications %}
+                    <div>
+                        <strong>{{ notification.get_notification_type_display }}</strong>
+                        <span class="muted-text">{{ notification.message }} • {{ notification.created_at|date:"d/m/Y H:i" }}</span>
+                    </div>
+                    {% empty %}
+                    <div>
+                        <strong>Sem notificações</strong>
+                        <span class="muted-text">Você está com tudo em dia.</span>
+                    </div>
+                    {% endfor %}
+                </div>
+                <a href="/aluno.html" class="btn btn-secondary">Voltar ao painel</a>
+            </div>
+        </section>
+    </main>
+    <script src="/assets/js/script.js"></script>
+</body>
+</html>

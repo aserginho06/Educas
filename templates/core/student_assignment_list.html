@@ -1,0 +1,44 @@
+{% extends "core/base_app.html" %}
+
+{% block title %}Minhas Atividades | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading">
+    <span class="page-kicker">Painel do aluno</span>
+    <h1>Minhas atividades</h1>
+    <p>Agora as tarefas ocupam a tela inteira com prioridade no que vence primeiro.</p>
+</div>
+
+<div class="assignment-card-grid assignment-card-grid-student">
+    {% for row in assignment_rows %}
+    <article class="card assignment-overview-card">
+        <div class="assignment-overview-top">
+            <div>
+                <span class="page-kicker">{{ row.assignment.subject.name }}</span>
+                <h3>{{ row.assignment.title }}</h3>
+            </div>
+            {% if row.submission %}
+            <span class="status-pill approved">Entregue</span>
+            {% elif row.assignment.is_closed %}
+            <span class="status-pill attention">Encerrada</span>
+            {% else %}
+            <span class="status-pill warning">Pendente</span>
+            {% endif %}
+        </div>
+        <div class="assignment-overview-meta">
+            <span>{{ row.assignment.classroom.name }}</span>
+            <span>Prazo: {{ row.assignment.due_at|date:"d/m/Y H:i" }}</span>
+        </div>
+        <p>{{ row.assignment.description|default:"Sem descrição detalhada."|truncatechars:180 }}</p>
+        <div class="card-actions">
+            <a href="{% url 'core:student_assignment_detail' row.assignment.id %}" class="btn btn-primary btn-compact">Abrir atividade</a>
+        </div>
+    </article>
+    {% empty %}
+    <div class="empty-state">
+        <strong>Nenhuma atividade disponível.</strong>
+        <p>Quando surgir tarefa nova, ela aparece aqui do jeito certo.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

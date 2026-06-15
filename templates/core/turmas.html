@@ -1,146 +1,111 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minhas Turmas | Educas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
-</head>
-<body class="app-page">
-    <header class="main-header">
-        <div class="container header-container app-header">
-            <a href="feed.html" class="logo">
-                <img src="assets/img/logo.png" alt="Logo Educas">
-                Educas
-            </a>
-            <div class="header-actions">
-                <a href="profile.html" class="text-link">Meu Perfil</a>
-                <a href="login.html" class="btn btn-secondary btn-compact">Sair</a>
+{% extends "core/base_app.html" %}
+
+{% block title %}Turmas | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading">
+    <span class="page-kicker">Estrutura acadêmica</span>
+    <h1>Minhas turmas</h1>
+    <p>Cards menores, mais densos e cronograma fora do miolo. O espaço agora trabalha em vez de enfeitar.</p>
+</div>
+
+{% if messages %}
+<div class="card app-alert-stack">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        {% if request.user.role == 'admin' %}
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Nova turma</span>
+                    <h2>Criar turma</h2>
+                </div>
             </div>
+            <form method="post" class="dashboard-grid">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="create_classroom">
+                <div class="form-group">
+                    <label for="{{ create_form.name.id_for_label }}">Nome</label>
+                    {{ create_form.name }}
+                    {{ create_form.name.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ create_form.academic_year.id_for_label }}">Ano letivo</label>
+                    {{ create_form.academic_year }}
+                    {{ create_form.academic_year.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ create_form.grade_level.id_for_label }}">Série/Período</label>
+                    {{ create_form.grade_level }}
+                    {{ create_form.grade_level.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ create_form.shift.id_for_label }}">Turno</label>
+                    {{ create_form.shift }}
+                    {{ create_form.shift.errors }}
+                </div>
+                <div class="form-group">
+                    <label for="{{ create_form.section.id_for_label }}">Identificador</label>
+                    {{ create_form.section }}
+                    {{ create_form.section.errors }}
+                </div>
+                <div class="form-actions form-field-full">
+                    <button type="submit" class="btn btn-primary">Criar turma</button>
+                </div>
+            </form>
         </div>
-    </header>
+        {% endif %}
 
-    <main class="app-container">
-        <aside class="sidebar-left">
-            <div class="card sidebar-menu">
-                <ul>
-                    <li><a href="feed.html"><span aria-hidden="true">🏠</span> Feed Geral</a></li>
-                    <li><a href="profile.html"><span aria-hidden="true">👤</span> Meu Perfil</a></li>
-                    <li><a href="turmas.html" class="active"><span aria-hidden="true">👥</span> Minhas Turmas</a></li>
-                    <li><a href="notas.html"><span aria-hidden="true">📊</span> Boletim & Notas</a></li>
-                    <li><a href="calendario.html"><span aria-hidden="true">📅</span> Calendario</a></li>
-                    <li><a href="administrador.html"><span aria-hidden="true">⚙️</span> Administrador</a></li>
-                </ul>
-            </div>
-        </aside>
-
-        <section class="app-main">
-            <div class="page-heading">
-                <span class="page-kicker">Ano letivo 2026</span>
-                <h1>Minhas Turmas</h1>
-                <p>Acompanhe disciplinas, professores, horarios e materiais de cada turma em um unico lugar.</p>
-            </div>
-
-            <div class="classes-grid">
-                <article class="card class-card">
-                    <span class="class-tag">3o Ano B</span>
-                    <h2>Matematica</h2>
-                    <p>Funcoes, geometria analitica e revisao para simulados.</p>
-                    <div class="class-meta">
-                        <span>Prof. Roberto Santos</span>
-                        <span>Seg e Qua - 08:00</span>
+        <div class="assignment-card-grid assignment-card-grid-student">
+            {% for classroom in classrooms %}
+            <article class="card class-summary-card">
+                <div class="assignment-overview-top">
+                    <div>
+                        <span class="page-kicker">{{ classroom.name }}</span>
+                        <h3>{{ classroom.grade_level.name|default:classroom.name }}{% if classroom.section %} · {{ classroom.section }}{% endif %}</h3>
                     </div>
-                    <div class="progress-track">
-                        <div class="progress-fill" style="width: 78%;"></div>
-                    </div>
-                </article>
-
-                <article class="card class-card">
-                    <span class="class-tag secondary">3o Ano B</span>
-                    <h2>Historia</h2>
-                    <p>Revolucao Industrial, imperialismo e movimentos sociais.</p>
-                    <div class="class-meta">
-                        <span>Profa. Amanda Lima</span>
-                        <span>Ter e Qui - 09:40</span>
-                    </div>
-                    <div class="progress-track">
-                        <div class="progress-fill" style="width: 64%;"></div>
-                    </div>
-                </article>
-
-                <article class="card class-card">
-                    <span class="class-tag accent">3o Ano B</span>
-                    <h2>Biologia</h2>
-                    <p>Genetica, ecologia e pratica de laboratorio orientada.</p>
-                    <div class="class-meta">
-                        <span>Prof. Carlos Bio</span>
-                        <span>Sex - 10:30</span>
-                    </div>
-                    <div class="progress-track">
-                        <div class="progress-fill" style="width: 71%;"></div>
-                    </div>
-                </article>
-            </div>
-
-            <div class="card">
-                <h3 class="widget-title">Horario da Semana</h3>
-                <div class="table-wrap">
-                    <table class="compact-table">
-                        <thead>
-                            <tr>
-                                <th>Dia</th>
-                                <th>Horario</th>
-                                <th>Disciplina</th>
-                                <th>Sala</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Segunda</td>
-                                <td>08:00</td>
-                                <td>Matematica</td>
-                                <td>204</td>
-                            </tr>
-                            <tr>
-                                <td>Terca</td>
-                                <td>09:40</td>
-                                <td>Historia</td>
-                                <td>108</td>
-                            </tr>
-                            <tr>
-                                <td>Sexta</td>
-                                <td>10:30</td>
-                                <td>Biologia</td>
-                                <td>Lab 2</td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <span class="status-pill approved">{{ classroom.get_shift_display }}</span>
                 </div>
-            </div>
-        </section>
-
-        <aside class="sidebar-right">
-            <div class="card">
-                <h3 class="widget-title">Materiais Recentes</h3>
-                <div class="summary-list">
-                    <div>
-                        <strong>Lista de Funcoes</strong>
-                        <span class="muted-text">Matematica - PDF</span>
-                    </div>
-                    <div>
-                        <strong>Resumo Visual</strong>
-                        <span class="muted-text">Historia - Imagem</span>
-                    </div>
-                    <div>
-                        <strong>Roteiro de Lab</strong>
-                        <span class="muted-text">Biologia - Documento</span>
-                    </div>
+                <div class="assignment-overview-meta">
+                    <span>{{ classroom.academic_year.name|default:classroom.school_year }}</span>
+                    <span>{{ classroom.homeroom_name }}</span>
                 </div>
+                <div class="class-summary-grid">
+                    <div class="class-summary-item"><strong>{{ classroom.student_count }}</strong><span>alunos</span></div>
+                    <div class="class-summary-item"><strong>{{ classroom.subject_count }}</strong><span>disciplinas</span></div>
+                    <div class="class-summary-item"><strong>{{ classroom.teacher_count }}</strong><span>professores</span></div>
+                    <div class="class-summary-item"><strong>{{ classroom.academic_year.name|default:classroom.school_year }}</strong><span>ano letivo</span></div>
+                </div>
+                <div class="card-actions">
+                    <a href="{{ classroom.view_schedule_url }}" class="btn btn-primary btn-compact">Ver cronograma</a>
+                </div>
+            </article>
+            {% empty %}
+            <div class="empty-state">
+                <strong>Sem turmas</strong>
+                <p>Crie uma turma ou entre por código para começar.</p>
             </div>
-        </aside>
-    </main>
+            {% endfor %}
+        </div>
+    </div>
 
-    <script src="assets/js/script.js"></script>
-</body>
-</html>
+    <aside class="app-content-aside">
+        <div class="dashboard-grid stats-grid">
+            <article class="card stat-card">
+                <span>Total de turmas</span>
+                <strong>{{ classrooms|length }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Perfil</span>
+                <strong>{{ request.user.get_role_display }}</strong>
+            </article>
+        </div>
+    </aside>
+</section>
+{% endblock %}

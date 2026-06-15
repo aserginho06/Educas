@@ -1,0 +1,162 @@
+{% extends "core/base_app.html" %}
+
+{% block title %}Painel do Professor | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Operação acadêmica</span>
+        <h1>Painel do professor</h1>
+        <p>Mais informação acima da dobra, menos gordura visual e atalho direto para o que realmente importa.</p>
+    </div>
+    <a href="{% url 'core:feed' %}" class="btn btn-secondary btn-compact">Abrir mural</a>
+</div>
+
+<section class="app-content-grid">
+    <div class="app-content-primary">
+        <div class="dashboard-grid stats-grid stats-grid-wide">
+            <article class="card stat-card">
+                <span>Turmas</span>
+                <strong>{{ classrooms|length }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Horários hoje</span>
+                <strong>{{ today_schedule|length }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Atividades abertas</span>
+                <strong>{{ pending_assignments|length }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Posts recentes</span>
+                <strong>{{ recent_posts|length }}</strong>
+            </article>
+        </div>
+
+        <div class="assignment-card-grid shortcut-grid">
+            <a href="{% url 'core:attendance' %}" class="card admin-action">
+                <strong>Frequência</strong>
+                <span>Registrar presença e faltas sem rodar demais pela interface.</span>
+            </a>
+            <a href="{% url 'core:grades_batch' %}" class="card admin-action">
+                <strong>Notas</strong>
+                <span>Lançar avaliação por turma com menos atrito.</span>
+            </a>
+            <a href="{% url 'core:aulas' %}" class="card admin-action">
+                <strong>Aulas</strong>
+                <span>Registrar aula, conteúdo e atividade no mesmo fluxo.</span>
+            </a>
+            <a href="{% url 'core:assignment_list' %}" class="card admin-action">
+                <strong>Atividades</strong>
+                <span>Ver prazos, entregas e correções sem tabela espremida.</span>
+            </a>
+        </div>
+
+        <div class="card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Agenda do dia</span>
+                    <h2>Hoje</h2>
+                </div>
+                <span class="section-counter">{{ today_label }}</span>
+            </div>
+            <div class="summary-list">
+                {% for schedule in today_schedule %}
+                <div>
+                    <strong>{{ schedule.starts_at|time:"H:i" }} - {{ schedule.ends_at|time:"H:i" }}</strong>
+                    <span class="muted-text">{{ schedule.classroom.name }} · {{ schedule.subject.name }}</span>
+                </div>
+                {% empty %}
+                <div>
+                    <strong>Sem aulas hoje</strong>
+                    <span class="muted-text">Nada agendado no momento.</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="dashboard-grid">
+            <div class="card">
+                <h3 class="widget-title">Turmas e disciplinas</h3>
+                <div class="table-wrap">
+                    <table class="compact-table">
+                        <thead>
+                            <tr>
+                                <th>Turma</th>
+                                <th>Disciplina</th>
+                                <th>Turno</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for link in subject_links %}
+                            <tr>
+                                <td>{{ link.classroom.name }}</td>
+                                <td>{{ link.subject.name }}</td>
+                                <td>{{ link.classroom.get_shift_display }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="3">Nenhuma disciplina vinculada.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h3 class="widget-title">Eventos criados</h3>
+                <div class="summary-list">
+                    {% for event in recent_events %}
+                    <div>
+                        <strong>{{ event.title }}</strong>
+                        <span class="muted-text">{{ event.starts_at|date:"d/m H:i" }}</span>
+                    </div>
+                    {% empty %}
+                    <div>
+                        <strong>Sem eventos</strong>
+                        <span class="muted-text">Cadastre provas, prazos e reuniões.</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Atividades abertas</h3>
+            <div class="summary-list">
+                {% for assignment in pending_assignments %}
+                <div>
+                    <strong>{{ assignment.title }}</strong>
+                    <span class="muted-text">{{ assignment.classroom.name }} · {{ assignment.due_at|date:"d/m H:i" }}</span>
+                </div>
+                {% empty %}
+                <div>
+                    <strong>Nenhuma atividade aberta</strong>
+                    <span class="muted-text">Tudo sob controle por enquanto.</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <div class="card">
+            <h3 class="widget-title">Posts recentes</h3>
+            <div class="summary-list">
+                {% for post in recent_posts %}
+                <div>
+                    <strong>{{ post.title }}</strong>
+                    <span class="muted-text">{{ post.classroom.name }} · {{ post.created_at|date:"d/m H:i" }}</span>
+                </div>
+                {% empty %}
+                <div>
+                    <strong>Nenhuma publicação</strong>
+                    <span class="muted-text">O mural ainda está vazio.</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </aside>
+</section>
+{% endblock %}

@@ -5,29 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login | Educas</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="/assets/css/style.css">
 </head>
 <body>
-
     <main class="auth-wrapper">
         <div class="card auth-card">
             <div class="auth-header">
-                <a href="index.html" class="logo">
-                    <img src="assets/img/logo.png" alt="Logo Educas">
+                <a href="{% url 'core:home' %}" class="logo">
+                    <img src="/assets/img/logo.png" alt="Logo Educas">
                     Educas
                 </a>
-                <p class="auth-subtitle">Bem-vindo de volta! Acesse sua conta.</p>
+                <p class="auth-subtitle">Acesse sua conta para entrar no ambiente academico.</p>
             </div>
 
-            <form action="feed.html">
+            {% if form.errors %}
+            <div class="card" style="margin-bottom: 16px; text-align: left;">
+                E-mail ou senha invalidos.
+            </div>
+            {% endif %}
+
+            <form method="post">
+                {% csrf_token %}
                 <div class="form-group">
-                    <label for="email" class="label-left">E-mail ou Matricula</label>
-                    <input type="email" id="email" required placeholder="ex: aluno@escola.com">
+                    <label for="email" class="label-left">E-mail</label>
+                    <input type="email" id="email" name="username" required placeholder="ex: aluno@escola.com">
                 </div>
 
                 <div class="form-group">
                     <label for="password" class="label-left">Senha</label>
-                    <input type="password" id="password" required placeholder="••••••••">
+                    <input type="password" id="password" name="password" required placeholder="Digite sua senha">
                 </div>
 
                 <button type="submit" class="btn btn-primary btn-submit">Entrar</button>
@@ -35,12 +41,12 @@
 
             <div class="auth-links">
                 <p><a href="#">Esqueceu a senha?</a></p>
-                <p>Nao tem acesso? <a href="cadastro.html">Cadastrar usuario</a></p>
-                <p><a href="index.html">Voltar para a Home</a></p>
+                <p>Nao tem acesso? <a href="{% url 'core:cadastro' %}">Solicitar cadastro</a></p>
+                <p><a href="{% url 'core:home' %}">Voltar para a Home</a></p>
             </div>
         </div>
     </main>
 
-    <script src="assets/js/script.js"></script>
+    <script src="/assets/js/script.js"></script>
 </body>
 </html>

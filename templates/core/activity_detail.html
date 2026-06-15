@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Entregar Atividade | Educas</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/css/style.css">
+</head>
+<body class="app-page">
+    <header class="main-header">
+        <div class="container header-container app-header">
+            <a href="/aluno.html" class="logo">
+                <img src="/assets/img/logo.png" alt="Logo Educas">
+                Educas
+            </a>
+            <nav class="navbar navbar-static" aria-label="Navegacao principal">
+                <ul>
+                    <li><a href="/atividades.html">Atividades</a></li>
+                    <li><a href="/atividades/{{ assignment.id }}/detalhe.html" class="active">Detalhes</a></li>
+                </ul>
+            </nav>
+            <div class="header-actions">
+                <a href="/profile.html" class="text-link">Meu perfil</a>
+                <a href="/logout/" class="btn btn-secondary btn-compact">Sair</a>
+            </div>
+        </div>
+    </header>
+    <main class="app-container">
+        <section class="app-main">
+            <div class="page-heading">
+                <span class="page-kicker">Entrega</span>
+                <h1>{{ assignment.title }}</h1>
+                <p>{{ assignment.description }}</p>
+            </div>
+            <div class="card">
+                <div class="summary-list">
+                    <div><strong>Turma:</strong> {{ assignment.classroom.name }}</div>
+                    <div><strong>Disciplina:</strong> {{ assignment.subject.name }}</div>
+                    <div><strong>Prazo:</strong> {{ assignment.due_at|date:"d/m/Y H:i" }}</div>
+                    <div><strong>Status:</strong> {% if assignment.is_closed %}Encerrada{% else %}Aberta{% endif %}</div>
+                </div>
+            </div>
+            <div class="card">
+                <h3 class="widget-title">Enviar entrega</h3>
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {{ form.attachment.label_tag }}
+                        {{ form.attachment }}
+                        {% for error in form.attachment.errors %}
+                        <div class="form-error">{{ error }}</div>
+                        {% endfor %}
+                    </div>
+                    {% if form.non_field_errors %}
+                    <div class="form-error">
+                        {% for error in form.non_field_errors %}
+                        <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                    <button type="submit" class="btn btn-primary">Enviar entrega</button>
+                    <a href="/atividades.html" class="btn btn-secondary">Voltar</a>
+                </form>
+                {% if submission %}
+                <div class="summary-list">
+                    <div><strong>Última entrega:</strong> {{ submission.submitted_at|date:"d/m/Y H:i" }}</div>
+                    <div><strong>Status:</strong> {{ submission.get_status_display }}</div>
+                    {% if submission.attachment %}
+                    <div><strong>Arquivo:</strong> <a href="{{ submission.attachment.url }}" target="_blank">Download</a></div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+    <script src="/assets/js/script.js"></script>
+</body>
+</html>

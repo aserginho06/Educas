@@ -1,29 +1,42 @@
-# Educas Django
+# Educas
 
-Sistema Educas estruturado em Django com paginas do app, painel administrativo visual e Django Admin.
+Refatoracao do Educas para uma plataforma educacional moderna em Django, com RBAC, API versionada e separacao clara de dominio.
 
-## Rodar localmente
+## Stack
+
+- Django
+- Django REST Framework
+- JWT
+- PostgreSQL
+- Docker
+
+## Apps
+
+- `core`: camada web publica e paginas institucionais.
+- `accounts`: usuario customizado, perfis e RBAC.
+- `academics`: turmas, materias, matriculas, notas, faltas e eventos.
+- `engagement`: feed academico, comentarios e reacoes.
+- `assignments`: atividades e entregas.
+- `api`: roteamento e paginacao da API `v1`.
+
+## Ambiente local
+
+1. Copie `.env.example` para `.env`.
+2. Instale as dependencias de `requirements.txt`.
+3. Rode `python manage.py makemigrations`.
+4. Rode `python manage.py migrate`.
+5. Crie um superusuario com `python manage.py createsuperuser`.
+6. Suba o servidor com `python manage.py runserver`.
+
+## Docker
 
 ```powershell
-.\.venv\Scripts\python.exe manage.py runserver 127.0.0.1:8000
+docker compose up --build
 ```
 
-Depois acesse:
+## Endpoints principais
 
-- App: http://127.0.0.1:8000/
-- Feed: http://127.0.0.1:8000/feed.html
-- Administrador Educas: http://127.0.0.1:8000/administrador.html
-- Django Admin: http://127.0.0.1:8000/admin/
-
-## Acesso de desenvolvimento
-
-- Usuario: `admin`
-- Senha: `admin123`
-
-## Estrutura
-
-- `educas/`: configuracao do projeto Django.
-- `core/`: app principal com models, views, rotas, admin e seed.
-- `templates/core/`: paginas HTML do sistema.
-- `assets/`: CSS, JS e imagens servidos como arquivos estaticos.
-- `db.sqlite3`: banco local de desenvolvimento.
+- Site: `http://127.0.0.1:8000/`
+- Admin Django: `http://127.0.0.1:8000/admin/`
+- API: `http://127.0.0.1:8000/api/v1/`
+- JWT: `http://127.0.0.1:8000/api/v1/auth/token/`
