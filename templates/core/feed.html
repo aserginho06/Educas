@@ -89,7 +89,7 @@
 
         <div data-feed-list class="stack-grid">
             {% for post in posts %}
-            <article class="card live-post-card" data-post-id="{{ post.id }}">
+            <article class="card live-post-card" id="post-{{ post.id }}" data-post-id="{{ post.id }}">
                 <div class="post-header">
                     <div class="avatar avatar-brand">{{ post.author.first_name|slice:":2"|upper }}</div>
                     <div class="user-info">
@@ -178,7 +178,7 @@
         </div>
     </div>
 
-    <aside class="app-content-aside">
+    <aside class="app-content-aside feed-sidebar">
         <div class="card calendar-card">
             <div class="calendar-header">
                 <div>

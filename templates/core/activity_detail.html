@@ -1,79 +1,164 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Entregar Atividade | Educas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body class="app-page">
-    <header class="main-header">
-        <div class="container header-container app-header">
-            <a href="/aluno.html" class="logo">
-                <img src="/assets/img/logo.png" alt="Logo Educas">
-                Educas
-            </a>
-            <nav class="navbar navbar-static" aria-label="Navegacao principal">
-                <ul>
-                    <li><a href="/atividades.html">Atividades</a></li>
-                    <li><a href="/atividades/{{ assignment.id }}/detalhe.html" class="active">Detalhes</a></li>
-                </ul>
-            </nav>
-            <div class="header-actions">
-                <a href="/profile.html" class="text-link">Meu perfil</a>
-                <a href="/logout/" class="btn btn-secondary btn-compact">Sair</a>
+{% extends "core/base_app.html" %}
+
+{% block title %}Entrega de Atividade | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Entrega</span>
+        <h1>{{ assignment.title }}</h1>
+        <p>{{ assignment.description }}</p>
+    </div>
+    <a href="{% url 'core:student_assignments' %}" class="btn btn-secondary btn-compact">Voltar às atividades</a>
+</div>
+
+{% if messages %}
+<div class="card app-alert-stack">
+    {% for message in messages %}
+    <p>{{ message }}</p>
+    {% endfor %}
+</div>
+{% endif %}
+
+<section class="app-content-grid detail-layout">
+    <div class="app-content-primary">
+        <div class="card detail-main-card">
+            <div class="detail-hero-grid">
+                <section class="detail-section">
+                    <h2 class="widget-title">Descrição</h2>
+                    <div class="detail-rich-text">
+                        <p>{{ assignment.description|linebreaksbr }}</p>
+                    </div>
+                </section>
+
+                <section class="detail-section">
+                    <h2 class="widget-title">Orientações</h2>
+                    <div class="summary-list">
+                        <div>
+                            <strong>Formato da entrega</strong>
+                            <span class="muted-text">Envie arquivo quando necessário e revise antes de confirmar.</span>
+                        </div>
+                        <div>
+                            <strong>Status atual</strong>
+                            <span class="muted-text">{% if assignment.is_closed %}Prazo encerrado, sem novos envios.{% else %}Atividade aberta para envio.{% endif %}</span>
+                        </div>
+                    </div>
+                </section>
             </div>
-        </div>
-    </header>
-    <main class="app-container">
-        <section class="app-main">
-            <div class="page-heading">
-                <span class="page-kicker">Entrega</span>
-                <h1>{{ assignment.title }}</h1>
-                <p>{{ assignment.description }}</p>
-            </div>
-            <div class="card">
+
+            <section class="detail-section">
+                <h2 class="widget-title">Anexos e conteúdo</h2>
                 <div class="summary-list">
-                    <div><strong>Turma:</strong> {{ assignment.classroom.name }}</div>
-                    <div><strong>Disciplina:</strong> {{ assignment.subject.name }}</div>
-                    <div><strong>Prazo:</strong> {{ assignment.due_at|date:"d/m/Y H:i" }}</div>
-                    <div><strong>Status:</strong> {% if assignment.is_closed %}Encerrada{% else %}Aberta{% endif %}</div>
+                    {% if assignment.attachment %}
+                    <div>
+                        <strong>Material da atividade</strong>
+                        <span class="muted-text"><a href="{{ assignment.attachment.url }}" target="_blank" rel="noopener noreferrer">Abrir anexo enviado pelo professor</a></span>
+                    </div>
+                    {% else %}
+                    <div>
+                        <strong>Sem anexo</strong>
+                        <span class="muted-text">Esta atividade não possui arquivo complementar.</span>
+                    </div>
+                    {% endif %}
+                </div>
+            </section>
+        </div>
+
+        <div class="detail-summary-grid">
+            <article class="card stat-card">
+                <span>Entregas</span>
+                <strong>{{ total_submissions }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Enviados</span>
+                <strong>{% if submission %}1{% else %}0{% endif %}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Pendentes</span>
+                <strong>{% if submission %}0{% else %}1{% endif %}</strong>
+            </article>
+        </div>
+
+        <div class="card detail-main-card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Sua entrega</span>
+                    <h2>Enviar atividade</h2>
                 </div>
             </div>
-            <div class="card">
-                <h3 class="widget-title">Enviar entrega</h3>
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div class="form-group">
-                        {{ form.attachment.label_tag }}
+            <form method="post" enctype="multipart/form-data" class="contact-form">
+                {% csrf_token %}
+                <div class="form-group file-upload-field" data-file-upload>
+                    {{ form.attachment.label_tag }}
+                    <div class="file-upload-box">
                         {{ form.attachment }}
-                        {% for error in form.attachment.errors %}
-                        <div class="form-error">{{ error }}</div>
-                        {% endfor %}
+                        <div class="file-upload-copy">
+                            <strong>Selecione o arquivo da sua entrega</strong>
+                            <span data-file-upload-text>Nenhum arquivo selecionado</span>
+                        </div>
                     </div>
-                    {% if form.non_field_errors %}
-                    <div class="form-error">
-                        {% for error in form.non_field_errors %}
-                        <p>{{ error }}</p>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
+                    {% for error in form.attachment.errors %}
+                    <div class="form-error">{{ error }}</div>
+                    {% endfor %}
+                </div>
+                {% if form.non_field_errors %}
+                <div class="form-error">
+                    {% for error in form.non_field_errors %}
+                    <p>{{ error }}</p>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                <div class="form-actions">
                     <button type="submit" class="btn btn-primary">Enviar entrega</button>
-                    <a href="/atividades.html" class="btn btn-secondary">Voltar</a>
-                </form>
+                </div>
+            </form>
+
+            <div class="summary-list detail-submission-list">
                 {% if submission %}
-                <div class="summary-list">
-                    <div><strong>Última entrega:</strong> {{ submission.submitted_at|date:"d/m/Y H:i" }}</div>
-                    <div><strong>Status:</strong> {{ submission.get_status_display }}</div>
-                    {% if submission.attachment %}
-                    <div><strong>Arquivo:</strong> <a href="{{ submission.attachment.url }}" target="_blank">Download</a></div>
-                    {% endif %}
+                <div>
+                    <strong>Última entrega</strong>
+                    <span class="muted-text">{{ submission.submitted_at|date:"d/m/Y H:i" }} · {{ submission.get_status_display }}</span>
+                </div>
+                {% if submission.attachment %}
+                <div>
+                    <strong>Arquivo enviado</strong>
+                    <span class="muted-text"><a href="{{ submission.attachment.url }}" target="_blank" rel="noopener noreferrer">Baixar envio atual</a></span>
+                </div>
+                {% endif %}
+                {% else %}
+                <div>
+                    <strong>Nenhum envio ainda</strong>
+                    <span class="muted-text">Sua entrega ainda está pendente.</span>
                 </div>
                 {% endif %}
             </div>
-        </section>
-    </main>
-    <script src="/assets/js/script.js"></script>
-</body>
-</html>
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card detail-meta-card">
+            <h3 class="widget-title">Resumo da atividade</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Turma</strong>
+                    <span class="muted-text">{{ assignment.classroom.name }}</span>
+                </div>
+                <div>
+                    <strong>Disciplina</strong>
+                    <span class="muted-text">{{ assignment.subject.name }}</span>
+                </div>
+                <div>
+                    <strong>Prazo</strong>
+                    <span class="muted-text">{{ assignment.due_at|date:"d/m/Y H:i" }}</span>
+                </div>
+                <div>
+                    <strong>Status</strong>
+                    <span class="status-pill {% if assignment.is_closed %}attention{% else %}approved{% endif %}">
+                        {% if assignment.is_closed %}Encerrada{% else %}Aberta{% endif %}
+                    </span>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+{% endblock %}

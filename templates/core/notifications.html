@@ -1,56 +1,58 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Notificacoes | Educas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body class="app-page">
-    <header class="main-header">
-        <div class="container header-container app-header">
-            <a href="/aluno.html" class="logo">
-                <img src="/assets/img/logo.png" alt="Logo Educas">
-                Educas
-            </a>
-            <nav class="navbar navbar-static" aria-label="Navegacao principal">
-                <ul>
-                    <li><a href="/aluno.html">Painel</a></li>
-                    <li><a href="/notificacoes.html" class="active">Notificacoes</a></li>
-                </ul>
-            </nav>
-            <div class="header-actions">
-                <a href="/profile.html" class="text-link">Meu perfil</a>
-                <a href="/logout/" class="btn btn-secondary btn-compact">Sair</a>
-            </div>
-        </div>
-    </header>
-    <main class="app-container">
-        <section class="app-main">
-            <div class="page-heading">
-                <span class="page-kicker">Notificacoes</span>
-                <h1>Atualizacoes e alertas</h1>
-                <p>Veja as notificações recentes sobre atividades e entregas.</p>
-            </div>
-            <div class="card">
-                <div class="summary-list">
-                    {% for notification in notifications %}
+{% extends "core/base_app.html" %}
+
+{% block title %}Notificações | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading">
+    <span class="page-kicker">Histórico de alertas</span>
+    <h1>Notificações recentes</h1>
+    <p>O sino virou o fluxo principal. Esta página agora é só o histórico completo, no mesmo layout do resto.</p>
+</div>
+
+<section class="app-content-grid detail-layout">
+    <div class="app-content-primary">
+        <div class="card detail-main-card">
+            <div class="notification-list">
+                {% for notification in notifications %}
+                <a href="{{ notification.link|default:request.path }}" class="notification-row">
                     <div>
                         <strong>{{ notification.get_notification_type_display }}</strong>
-                        <span class="muted-text">{{ notification.message }} • {{ notification.created_at|date:"d/m/Y H:i" }}</span>
+                        <p class="muted-text">{{ notification.message }}</p>
                     </div>
-                    {% empty %}
-                    <div>
-                        <strong>Sem notificações</strong>
-                        <span class="muted-text">Você está com tudo em dia.</span>
-                    </div>
-                    {% endfor %}
+                    <span class="notification-time">{{ notification.created_at|date:"d/m/Y H:i" }}</span>
+                </a>
+                {% empty %}
+                <div class="empty-state">
+                    <strong>Sem notificações.</strong>
+                    <p>Seu histórico está limpo por enquanto.</p>
                 </div>
-                <a href="/aluno.html" class="btn btn-secondary">Voltar ao painel</a>
+                {% endfor %}
             </div>
-        </section>
-    </main>
-    <script src="/assets/js/script.js"></script>
-</body>
-</html>
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Tipos exibidos</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Atividade criada</strong>
+                    <span class="muted-text">Novas atividades liberadas para a turma.</span>
+                </div>
+                <div>
+                    <strong>Atividade entregue</strong>
+                    <span class="muted-text">Entrega de aluno registrada.</span>
+                </div>
+                <div>
+                    <strong>Nota lançada</strong>
+                    <span class="muted-text">Avaliação registrada para consulta.</span>
+                </div>
+                <div>
+                    <strong>Comentário</strong>
+                    <span class="muted-text">Interação nova no feed.</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+{% endblock %}

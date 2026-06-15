@@ -2,6 +2,7 @@ function initializeApp() {
     setupThemeToggle();
     setupAppShell();
     setupResponsiveMenu();
+    setupNotifications();
     setupSidebarCalendar();
     setupFeedInteractions();
     setupFileUploads();
@@ -43,6 +44,24 @@ function setupAppShell() {
     window.addEventListener("resize", () => {
         if (window.innerWidth > 1080) {
             closeSidebar();
+        }
+    });
+}
+
+function setupNotifications() {
+    const toggle = document.querySelector("[data-notif-toggle]");
+    const dropdown = document.querySelector("[data-notif-dropdown]");
+
+    if (!toggle || !dropdown) return;
+
+    toggle.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dropdown.classList.toggle("is-open");
+    });
+
+    document.addEventListener("click", (e) => {
+        if (!dropdown.contains(e.target) && !toggle.contains(e.target)) {
+            dropdown.classList.remove("is-open");
         }
     });
 }
@@ -290,7 +309,8 @@ function setupFeedInteractions() {
             aiReviewButton.disabled = true;
             aiReviewButton.classList.add("loading");
             if (messageNode) {
-                messageNode.textContent = "Revisando texto com IA...";
+                messageNode.innerHTML = '<span class="spinner"></span> Analisando conteúdo...';
+                messageNode.style.color = "var(--brand-primary)";
             }
 
             try {
@@ -308,7 +328,7 @@ function setupFeedInteractions() {
                 });
                 const payload = await response.json();
                 if (!response.ok) {
-                    throw new Error(payload.error || "Falha ao revisar texto.");
+                    throw new Error(payload.error || "IA temporariamente indisponível. Tente novamente.");
                 }
                 if (titleInput && payload.reviewed.title) {
                     titleInput.value = payload.reviewed.title;
@@ -316,11 +336,13 @@ function setupFeedInteractions() {
                 contentInput.value = payload.reviewed.content || contentInput.value;
                 if (messageNode) {
                     const source = payload.meta && payload.meta.used_api ? "OpenRouter" : "fallback local";
-                    messageNode.textContent = `Texto revisado com ${source}.`;
+                    messageNode.textContent = `✨ Revisão concluída via ${source}.`;
+                    messageNode.style.color = "#10b981";
                 }
             } catch (error) {
                 if (messageNode) {
-                    messageNode.textContent = error.message || "Erro ao revisar.";
+                    messageNode.textContent = "⚠️ " + (error.message || "Erro de conexão.");
+                    messageNode.style.color = "#ef4444";
                 }
             } finally {
                 aiReviewButton.disabled = false;
@@ -329,54 +351,57 @@ function setupFeedInteractions() {
         });
     }
 
-    if (postForm && feedList) {
+    if (postForm) {
         postForm.addEventListener("submit", async (event) => {
             event.preventDefault();
-            const submitButton = postForm.querySelector("button[type='submit']");
+            const feedListContainer = document.querySelector("[data-feed-list]");
+            const submitButton = postForm.querySelector("button[type='submit']") || 
+                                 document.querySelector(`button[type="submit"][form="${postForm.id}"]`);
             const messageNode = postForm.querySelector("[data-post-form-message]");
             const formData = new FormData(postForm);
 
-            if (!submitButton) {
-                return;
-            }
-
+            if (!submitButton) return;
+            
             submitButton.disabled = true;
             submitButton.classList.add("loading");
-            if (messageNode) {
-                messageNode.textContent = "Publicando...";
-            }
+            if (messageNode) messageNode.textContent = "Publicando...";
 
             try {
-                const response = await fetch(postForm.dataset.createPostUrl, {
+                const url = postForm.dataset.createPostUrl || window.location.pathname;
+                const response = await fetch(url, {
                     method: "POST",
                     headers: {
-                        "X-CSRFToken": csrfToken,
+                        "X-CSRFToken": getCsrfToken(),
                         "X-Requested-With": "XMLHttpRequest",
                     },
                     body: formData,
                 });
+
                 const payload = await response.json();
                 if (!response.ok) {
                     throw new Error(flattenFormErrors(payload.errors) || "Nao foi possivel publicar.");
                 }
-                const emptyState = feedList.querySelector("[data-feed-empty-state]");
-                if (emptyState) {
-                    const emptyCard = emptyState.closest(".card");
-                    if (emptyCard) {
-                        emptyCard.remove();
-                    } else {
-                        emptyState.remove();
+
+                if (feedListContainer) {
+                    const emptyState = feedListContainer.querySelector("[data-feed-empty-state]");
+                    if (emptyState) {
+                        const emptyCard = emptyState.closest(".card");
+                        if (emptyCard) emptyCard.remove();
+                        else emptyState.remove();
                     }
+                    feedListContainer.insertAdjacentHTML("afterbegin", renderPostCard(payload.post));
+                    hydratePostCard(feedListContainer.firstElementChild, getCsrfToken());
                 }
-                feedList.insertAdjacentHTML("afterbegin", renderPostCard(payload.post));
-                hydratePostCard(feedList.firstElementChild, csrfToken);
+                
                 postForm.reset();
                 if (messageNode) {
                     messageNode.textContent = "Publicacao enviada e colocada no topo.";
+                    messageNode.style.color = "#10b981";
                 }
             } catch (error) {
                 if (messageNode) {
                     messageNode.textContent = error.message || "Erro ao publicar.";
+                    messageNode.style.color = "#ef4444";
                 }
                 console.error(error);
             } finally {
@@ -605,7 +630,7 @@ function renderPostCard(post) {
     const attachmentMarkup = !post.attachment_url
         ? ""
         : `
-            ${post.attachment_is_image ? `<p><img src="${escapeHtml(post.attachment_url)}" alt="${escapeHtml(post.title)}" style="max-width: 100%; border-radius: 18px;"></p>` : ""}
+            ${post.attachment_is_image ? `<p><img src="${escapeHtml(post.attachment_url)}" alt="${escapeHtml(post.title)}" class="post-cover-image"></p>` : ""}
             <p class="attachment-chip">
                 <span>${escapeHtml(post.attachment_extension)}</span>
                 <a href="${escapeHtml(post.attachment_url)}" target="_blank" rel="noopener noreferrer">${escapeHtml(post.attachment_name)}</a>
@@ -623,7 +648,7 @@ function renderPostCard(post) {
         : "";
 
     return `
-        <article class="card live-post-card" data-post-id="${post.id}">
+        <article class="card live-post-card" id="post-${post.id}" data-post-id="${post.id}">
             <div class="post-header">
                 <div class="avatar avatar-brand">${escapeHtml(post.author_initials)}</div>
                 <div class="user-info">
@@ -661,7 +686,7 @@ function renderPostCard(post) {
                 </button>
                 ${deleteMarkup}
             </div>
-            <div class="card post-comments-card" style="margin-top: 1rem;">
+            <div class="card post-comments-card">
                 <h4 class="widget-title">Comentarios</h4>
                 <div class="comment-stream" data-comment-stream>
                     <p class="muted-text" data-empty-comments>Nenhum comentario ainda.</p>
@@ -721,9 +746,11 @@ function hydrateCommentDeletion(commentCard, csrfToken) {
 }
 
 function getCsrfToken() {
+    if (window.CSRF_TOKEN) return window.CSRF_TOKEN;
+    
     const tokenInput = document.querySelector("input[name='csrfmiddlewaretoken']");
     if (tokenInput && tokenInput.value) return tokenInput.value;
-    // fallback to cookie (Django default name 'csrftoken')
+
     const match = document.cookie.match(/(^|; )csrftoken=([^;]+)/);
     return match ? decodeURIComponent(match[2]) : "";
 }

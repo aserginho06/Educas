@@ -9,25 +9,57 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script>
+        window.CSRF_TOKEN = "{{ csrf_token }}";
+    </script>
 </head>
 <body class="app-page shell-page">
     <div class="app-shell">
-        {% include "core/includes/app_sidebar.html" %}
+        <aside class="app-sidebar" data-app-sidebar>
+            {% include "core/includes/app_sidebar.html" %}
+        </aside>
 
         <div class="app-shell-body">
-            <header class="app-mobile-header">
-                <button class="app-shell-toggle" type="button" aria-label="Abrir menu" aria-expanded="false" data-sidebar-toggle>
+            <header class="app-top-nav">
+                <button
+                    class="app-shell-toggle"
+                    type="button"
+                    data-sidebar-toggle
+                    aria-label="Abrir navegação"
+                    aria-expanded="false">
                     <span></span>
                     <span></span>
                     <span></span>
                 </button>
-                <a href="{% url 'core:feed' %}" class="logo app-mobile-logo">
-                    <img src="{% static 'img/logo.png' %}" alt="Logo Educas">
-                    Educas
-                </a>
-                <a href="{% url 'core:perfil' %}" class="app-mobile-user">{{ request.user.first_name|default:request.user.role_label }}</a>
+                <div class="app-top-nav-spacer"></div>
+                <div class="notif-dropdown-wrapper">
+                    <button class="notification-bell" data-notif-toggle aria-label="Notificações">
+                        <span aria-hidden="true">&#128276;</span>
+                        {% if shell_notifications_unread_count %}
+                        <span class="notif-badge">{{ shell_notifications_unread_count }}</span>
+                        {% endif %}
+                    </button>
+                    <div class="notif-dropdown" data-notif-dropdown>
+                        <div class="notif-header">
+                            <span>Notificações</span>
+                        </div>
+                        <div class="notif-list" data-notif-list>
+                            {% for notification in shell_notifications %}
+                            <a href="{{ notification.link|default:request.path }}" class="notif-item {% if not notification.is_read %}is-unread{% endif %}">
+                                <strong>{{ notification.get_notification_type_display }}</strong>
+                                <span>{{ notification.message }}</span>
+                                <small>{{ notification.created_at|date:"d/m H:i" }}</small>
+                            </a>
+                            {% empty %}
+                            <div class="notif-empty">Nenhuma notificação recente.</div>
+                            {% endfor %}
+                        </div>
+                        <div class="notif-footer">
+                            <a href="{% url 'core:notifications' %}">Ver histórico completo</a>
+                        </div>
+                    </div>
+                </div>
             </header>
-
             <main class="app-shell-main">
                 {% block app_content %}{% endblock %}
             </main>
@@ -36,7 +68,7 @@
 
     <div class="app-shell-overlay" data-sidebar-overlay></div>
 
-    {% block app_scripts %}{% endblock %}
     <script src="{% static 'js/script.js' %}"></script>
+    {% block app_scripts %}{% endblock %}
 </body>
 </html>

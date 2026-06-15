@@ -26,6 +26,7 @@ urlpatterns = [
     path("feed/comments/", views.feed_comment, name="feed_comment"),
     path("feed/comments/delete/", views.feed_delete_comment, name="feed_delete_comment"),
     path("profile.html", views.perfil, name="perfil"),
+    path("settings.html", views.configuracoes, name="configuracoes"),
     path("turmas.html", views.turmas, name="turmas"),
     path("turmas/<int:classroom_id>/cronograma.html", views.classroom_schedule, name="classroom_schedule"),
     path("aulas.html", views.aulas, name="aulas"),

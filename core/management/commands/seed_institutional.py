@@ -137,10 +137,15 @@ class Command(BaseCommand):
                 ],
                 "teacher_messages": [
                     "Pessoal, revisem o material da semana e anotem as dúvidas para a próxima aula.",
-                    "Lembrem-se de acompanhar o cronograma e organizar a entrega com antecedência.",
-                    "A atividade já está no mural com orientações claras e prazo definido.",
-                    "Quem precisar de apoio pode comentar no post ou falar comigo no início da aula.",
-                    "Hoje vamos consolidar o conteúdo com exercícios práticos e revisão guiada.",
+                    "Bom dia turma! Publiquei o roteiro de estudos para o nosso simulado.",
+                    "Não esqueçam de trazer o material de laboratório na quarta-feira.",
+                    "O prazo para o envio do trabalho em grupo foi estendido até sexta.",
+                    "Deixei uma lista de exercícios extras para quem quer reforçar a base.",
+                    "Parabéns pelo desempenho na última atividade prática! Vamos manter o foco.",
+                    "Verifiquem o anexo com as referências bibliográficas da unidade 3.",
+                    "Lembrete: nossa aula de campo está confirmada. Olhem as instruções no PDF.",
+                    "Dúvidas sobre o projeto? Estarei disponível no início do intervalo amanhã.",
+                    "A revisão de hoje focará nos pontos onde tivemos mais dificuldade na prova."
                 ],
                 "student_comments": [
                     "Professor, já comecei a organizar minha entrega.",
@@ -552,6 +557,17 @@ class Command(BaseCommand):
                     content=f"{teacher_messages[(classroom_index + subject_index) % len(teacher_messages)]} {self.MANAGED_TAG}",
                     is_pinned=subject_index == 0,
                 )
+                
+                # BUG 7: Notificação simulada no Feed
+                if subject_index == 1:
+                    Post.objects.create(
+                        classroom=classroom,
+                        author=classroom_subject.teacher,
+                        post_type=Post.PostType.ANNOUNCEMENT,
+                        title="📢 Nova nota lançada!",
+                        content=f"As notas da avaliação de {classroom_subject.subject.name} já estão disponíveis no portal.",
+                    )
+
                 Post.objects.filter(pk=post.pk).update(created_at=post_time, updated_at=post_time)
                 event_start = due_at + timedelta(days=2)
                 AcademicEvent.objects.create(

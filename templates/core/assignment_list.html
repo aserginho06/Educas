@@ -31,7 +31,7 @@
                 <div class="assignment-overview-meta">
                     <span>{{ assignment.classroom.name }}</span>
                     <span>Prazo: {{ assignment.due_at|date:"d/m/Y H:i" }}</span>
-                    <span>{{ assignment.submission_count }} entrega(s)</span>
+                    <span>{{ assignment.total_submissions }} entrega(s)</span>
                 </div>
                 <p>{{ assignment.description|default:"Sem descrição detalhada."|truncatechars:180 }}</p>
                 <div class="card-actions">

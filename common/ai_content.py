@@ -2,6 +2,7 @@ import http.client
 import json
 import logging
 import socket
+import re
 import time
 from urllib import error, request
 from urllib.parse import urlparse
@@ -99,6 +100,7 @@ def _perform_openrouter_request(payload, headers):
 
 def generate_json(prompt, fallback):
     config_data = get_ai_configuration()
+    logger.debug("Iniciando geração de JSON | Prompt: %s", prompt[:50])
     AI_RUNTIME_STATUS["calls"] += 1
     AI_RUNTIME_STATUS["enabled"] = config_data["enabled"]
     AI_RUNTIME_STATUS["provider"] = "openrouter" if config_data["enabled"] else "fallback"
@@ -152,6 +154,7 @@ def generate_json(prompt, fallback):
 
             if status != 200:
                 error_message = f"HTTP {status}"
+                logger.error("ERRO OPENROUTER: %s | Detalhes: %s", status, preview)
                 if status in {401, 403, 429, 500, 502}:
                     logger.warning("OpenRouter respondeu com status de erro %s: %s", status, preview)
                 else:
@@ -167,7 +170,14 @@ def generate_json(prompt, fallback):
             if not raw_text.strip():
                 raise ValueError("Resposta da IA vazia.")
 
-            response_payload = json.loads(raw_text)
+            try:
+                response_payload = json.loads(raw_text)
+            except json.JSONDecodeError:
+                # Tenta extrair JSON (objeto ou array) se houver texto extra ao redor
+                match = re.search(r'(\{.*\}|\[.*\])', raw_text, re.DOTALL)
+                if not match: raise ValueError("Nenhum JSON encontrado na resposta.")
+                response_payload = json.loads(match.group())
+
             choices = response_payload.get("choices", [])
             if not choices or not isinstance(choices, list):
                 raise ValueError("Resposta da IA sem lista de choices valida.")
@@ -176,7 +186,12 @@ def generate_json(prompt, fallback):
             if not content or not isinstance(content, str):
                 raise ValueError("Resposta da IA vazia ou invalida.")
 
-            cleaned = content.strip().removeprefix("```json").removesuffix("```").strip()
+            # Limpeza agressiva de markdown blocks
+            cleaned = content.strip()
+            if cleaned.startswith("```"):
+                cleaned = re.sub(r'^```[a-z]*\n?', '', cleaned)
+                cleaned = re.sub(r'\n?```$', '', cleaned)
+            
             if not cleaned:
                 raise ValueError("Resposta da IA retornou conteudo JSON vazio.")
 

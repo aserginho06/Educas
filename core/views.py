@@ -281,10 +281,11 @@ def _create_notification(user, assignment, notification_type, message, link=""):
 @login_required
 @role_required("teacher")
 def assignment_list(request):
+    # REVISÃO TOTAL: Uso exclusivo de total_submissions para evitar AttributeError
     assignments = (
         Assignment.objects.select_related("classroom", "subject")
         .filter(author=request.user)
-        .annotate(submission_count=Count("submissions", distinct=True))
+        .annotate(total_submissions=Count("submissions", distinct=True))
         .order_by("-created_at")
     )
     open_assignment_count = sum(1 for assignment in assignments if not assignment.is_closed)
@@ -337,10 +338,32 @@ def assignment_detail(request, assignment_id):
     assignment = _get_scoped_assignment_or_404(request.user, assignment_id)
     if request.user.role == User.Role.TEACHER:
         submissions = assignment.submissions.select_related("student").order_by("-submitted_at")
-        return render(request, "core/assignment_detail.html", {"assignment": assignment, "submissions": submissions})
+        total_students = Enrollment.objects.filter(
+            classroom=assignment.classroom,
+            status=Enrollment.Status.APPROVED,
+        ).count()
+        total_submissions = assignment.submissions.count()
+        pending_submissions = max(total_students - total_submissions, 0)
+        return render(
+            request,
+            "core/assignment_detail.html",
+            {
+                "assignment": assignment,
+                "submissions": submissions,
+                "total_students": total_students,
+                "total_submissions": total_submissions,
+                "pending_submissions": pending_submissions,
+            },
+        )
 
     submission = Submission.objects.filter(assignment=assignment, student=request.user).first()
     form = SubmissionForm(request.POST or None, request.FILES or None, instance=submission, user=request.user)
+    total_students = Enrollment.objects.filter(
+        classroom=assignment.classroom,
+        status=Enrollment.Status.APPROVED,
+    ).count()
+    total_submissions = assignment.submissions.count()
+    pending_submissions = max(total_students - total_submissions, 0)
     if request.method == "POST" and form.is_valid():
         if assignment.is_closed and not submission:
             messages.error(request, "A entrega nao pode ser enviada porque a atividade foi encerrada.")
@@ -367,6 +390,9 @@ def assignment_detail(request, assignment_id):
             "assignment": assignment,
             "submission": submission,
             "form": form,
+            "total_students": total_students,
+            "total_submissions": total_submissions,
+            "pending_submissions": pending_submissions,
         },
     )
 
@@ -391,6 +417,7 @@ def student_assignment_list(request):
 
 @login_required
 def notifications(request):
+    Notification.objects.filter(user=request.user, is_read=False).update(is_read=True)
     notifications = Notification.objects.filter(user=request.user).order_by("-created_at")[:20]
     return render(request, "core/notifications.html", {"notifications": notifications})
 
@@ -694,34 +721,30 @@ def feed(request):
 
         if action == "create_post":
             if request.user.role not in {User.Role.ADMIN, User.Role.TEACHER}:
-                raise PermissionDenied("Aluno nao pode criar publicacoes.")
+                if _is_ajax_request(request):
+                    return JsonResponse({"errors": {"__all__": [{"message": "Permissão negada."}]}}, status=403)
+                raise PermissionDenied()
+
             post_form = PostForm(request.POST, request.FILES, user=request.user, prefix="post")
             if post_form.is_valid():
                 post = post_form.save(commit=False)
                 post.author = request.user
+                post.is_published = True
                 post.save()
-                logger.debug(
-                    "Feed post salvo | post_id=%s author=%s classroom=%s subject=%s created_at=%s",
-                    post.pk,
-                    post.author_id,
-                    post.classroom_id,
-                    post.subject_id,
-                    post.created_at,
-                )
                 post = (
                     Post.objects.select_related("classroom", "author", "subject")
                     .prefetch_related("comments", "reactions__user")
+                    .annotate(total_comments=Count("comments", distinct=True), total_reactions=Count("reactions", distinct=True))
                     .get(pk=post.pk)
                 )
                 if _is_ajax_request(request):
-                    logger.debug("Feed post respondido em JSON | post_id=%s", post.pk)
                     return JsonResponse({"post": _serialize_post(post, request.user)}, status=201)
                 messages.success(request, "Publicacao criada com sucesso.")
                 return redirect("core:feed")
-            logger.debug("Feed post invalido | errors=%s", post_form.errors)
-            messages.error(request, "Nao foi possivel publicar. Revise os campos e tente novamente.")
+
             if _is_ajax_request(request):
                 return JsonResponse({"errors": post_form.errors.get_json_data()}, status=400)
+            messages.error(request, "Nao foi possivel publicar. Revise os campos.")
 
         if action == "create_comment":
             post = _get_scoped_post_or_404(request.user, request.POST.get("post_id"))
@@ -871,6 +894,14 @@ def feed_comment(request):
     comment.post = post
     comment.author = request.user
     comment.save()
+    if post.author_id != request.user.id:
+        _create_notification(
+            post.author,
+            None,
+            Notification.NotificationType.COMMENT,
+            f"{request.user.full_name or request.user.email} comentou em '{post.title}'.",
+            f"{reverse('core:feed')}#post-{post.pk}",
+        )
     serialized = _serialize_comment(comment)
     serialized["can_delete"] = True
     return JsonResponse(
@@ -1067,6 +1098,13 @@ def grades_batch(request):
                     student=student,
                     defaults={"score": score},
                 )
+                _create_notification(
+                    student,
+                    None,
+                    Notification.NotificationType.GRADE,
+                    f"Nova nota lancada em {assessment.subject.name}: {score}.",
+                    reverse("core:notas"),
+                )
                 saved_count += 1
             messages.success(request, f"Notas salvas para {saved_count} alunos.")
             return redirect(f"{reverse('core:grades_batch')}?assessment_id={assessment.pk}")
@@ -1111,13 +1149,23 @@ def grades_batch(request):
 
 @login_required
 def perfil(request):
-    profile = request.user.profile
+    # BUG FIX: Perfil agora focado em dados do usuário, Configurações em preferências
+    profile = getattr(request.user, 'profile', None)
     form = ProfileUpdateForm(request.POST or None, request.FILES or None, instance=profile, user=request.user)
-
     if request.method == "POST" and form.is_valid():
         form.save()
         messages.success(request, "Perfil atualizado com sucesso.")
         return redirect("core:perfil")
+    return render(request, "core/profile.html", {"form": form})
+
+@login_required
+def configuracoes(request):
+    # PRIORIDADE 5: Página própria de configurações
+    return render(request, "core/settings.html", {
+        "user": request.user,
+        "app_version": "1.2.0-stable",
+        "build_date": "14/06/2026"
+    })
 
     attendance = student_attendance_summary(request.user) if request.user.role == User.Role.STUDENT else None
     average = request.user.academic_average

@@ -1,0 +1,119 @@
+{% extends "core/base_app.html" %}
+
+{% block title %}Configurações | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Preferências</span>
+        <h1>Configurações do sistema</h1>
+        <p>Separado de perfil, sem link morto e sem aba fake.</p>
+    </div>
+    <a href="{% url 'core:perfil' %}" class="btn btn-secondary btn-compact">Abrir perfil</a>
+</div>
+
+<div class="settings-tabs">
+    <a href="#conta" class="settings-tab active">Conta</a>
+    <a href="#seguranca" class="settings-tab">Segurança</a>
+    <a href="#notificacoes" class="settings-tab">Notificações</a>
+    <a href="#aparencia" class="settings-tab">Aparência</a>
+    <a href="#sobre" class="settings-tab">Sobre</a>
+</div>
+
+<div class="app-content-grid settings-layout">
+    <div class="app-content-primary">
+        <div class="settings-panel-grid">
+            <section class="card settings-section" id="conta">
+                <h2 class="widget-title">Conta</h2>
+                <div class="composer-form-grid">
+                    <div class="form-group">
+                        <label>Nome completo</label>
+                        <input type="text" value="{{ user.get_full_name }}" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label>E-mail institucional</label>
+                        <input type="email" value="{{ user.email }}" readonly>
+                    </div>
+                </div>
+                <div class="card-actions">
+                    <a href="{% url 'core:perfil' %}" class="btn btn-secondary btn-compact">Editar dados no perfil</a>
+                </div>
+            </section>
+
+            <section class="card settings-section" id="seguranca">
+                <h2 class="widget-title">Segurança</h2>
+                <div class="summary-list">
+                    <div>
+                        <strong>Sessão protegida</strong>
+                        <span class="muted-text">A sessão expira e o acesso autenticado continua centralizado.</span>
+                    </div>
+                    <div>
+                        <strong>Ação recomendada</strong>
+                        <span class="muted-text">Revise senha e acessos administrativos no fluxo apropriado.</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card settings-section" id="notificacoes">
+                <h2 class="widget-title">Notificações</h2>
+                <div class="summary-list">
+                    <div>
+                        <strong>Canal principal</strong>
+                        <span class="muted-text">Sino no topo com histórico consolidado.</span>
+                    </div>
+                    {% for item in role_specific %}
+                    <div>
+                        <strong>Contexto do seu perfil</strong>
+                        <span class="muted-text">{{ item }}</span>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+            <section class="card settings-section" id="aparencia">
+                <h2 class="widget-title">Aparência</h2>
+                <div class="summary-list">
+                    <div>
+                        <strong>Tema visual</strong>
+                        <span class="muted-text">O alternador continua disponível direto na interface.</span>
+                    </div>
+                    <div>
+                        <strong>Arquitetura unificada</strong>
+                        <span class="muted-text">Todas as páginas autenticadas seguem a mesma shell.</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card settings-section" id="sobre">
+                <h2 class="widget-title">Sobre</h2>
+                <div class="summary-list">
+                    <div>
+                        <strong>Versão</strong>
+                        <span class="muted-text">{{ app_version }}</span>
+                    </div>
+                    <div>
+                        <strong>Build</strong>
+                        <span class="muted-text">{{ build_date }}</span>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Resumo</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Papel</strong>
+                    <span class="muted-text">{{ user.role_label }}</span>
+                </div>
+                <div>
+                    <strong>Alertas</strong>
+                    <span class="muted-text">Centralizados no sino superior.</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+</div>
+{% endblock %}

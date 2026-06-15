@@ -1,21 +1,20 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Cronograma da Turma</title>
-    <link rel="stylesheet" href="/assets/css/style.css" />
-</head>
-<body>
-    <header class="page-header">
-        <div class="header-content">
-            <h1>Cronograma da turma {{ classroom.name }}</h1>
-            <a href="{% url 'core:turmas' %}" class="btn btn-secondary">Voltar para Turmas</a>
-        </div>
-    </header>
+{% extends "core/base_app.html" %}
 
-    <main class="page-main page-main-wide">
-        <section class="card">
+{% block title %}Cronograma da Turma | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Organização semanal</span>
+        <h1>Cronograma da turma {{ classroom.name }}</h1>
+        <p>Uma leitura só, na mesma arquitetura do resto do sistema. Finalmente sem página órfã.</p>
+    </div>
+    <a href="{% url 'core:turmas' %}" class="btn btn-secondary btn-compact">Voltar às turmas</a>
+</div>
+
+<section class="app-content-grid detail-layout">
+    <div class="app-content-primary">
+        <div class="card">
             <div class="schedule-summary-grid">
                 <div>
                     <strong>{{ classroom.grade_level.name|default:classroom.name }}{% if classroom.section %} - {{ classroom.section }}{% endif %}</strong>
@@ -30,61 +29,76 @@
                     <span>Turno</span>
                 </div>
                 <div>
-                    <strong>{{ classroom.homeroom_name }}</strong>
+                    <strong>{{ classroom.homeroom_teacher.full_name|default:"Nao definido" }}</strong>
                     <span>Professor regente</span>
                 </div>
             </div>
-        </section>
+        </div>
 
-        <section class="card">
+        <div class="card">
             <h2 class="widget-title">Cronograma semanal</h2>
             {% if rows %}
-                <div class="table-wrap">
-                    <table class="schedule-table">
-                        <thead>
-                            <tr>
-                                <th>Horário</th>
-                                {% for weekday, label in weekday_labels %}
-                                <th>{{ label }}</th>
-                                {% endfor %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for row in rows %}
-                            <tr>
-                                <td>{{ row.time }}</td>
-                                {% for cell in row.cells %}
-                                <td>
-                                    {% if cell.schedule %}
-                                        {% if cell.schedule.entry_type == 'break' %}
-                                            <span class="schedule-pill schedule-pill-break">Intervalo</span>
-                                        {% else %}
-                                            <span class="schedule-pill" style="background-color: {{ cell.color|default:'#2563eb' }}">
-                                                {{ cell.schedule.subject.name }}
-                                            </span>
-                                            <div class="schedule-cell-meta">
-                                                <span>{{ cell.schedule.teacher.full_name|default:'Professor nao definido' }}</span>
-                                                {% if cell.schedule.room %}
-                                                    <small>Sala {{ cell.schedule.room }}</small>
-                                                {% endif %}
-                                            </div>
-                                        {% endif %}
-                                    {% else %}
-                                        <span class="muted-text">Livre</span>
-                                    {% endif %}
-                                </td>
-                                {% endfor %}
-                            </tr>
+            <div class="table-wrap">
+                <table class="schedule-table">
+                    <thead>
+                        <tr>
+                            <th>Horário</th>
+                            {% for weekday, label in weekday_labels %}
+                            <th>{{ label }}</th>
                             {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in rows %}
+                        <tr>
+                            <td>{{ row.time }}</td>
+                            {% for cell in row.cells %}
+                            <td>
+                                {% if cell.schedule %}
+                                    {% if cell.schedule.entry_type == 'break' %}
+                                    <span class="schedule-pill schedule-pill-break">Intervalo</span>
+                                    {% else %}
+                                    <span class="schedule-pill" style="background-color: {{ cell.color|default:'#2563eb' }};">{{ cell.schedule.subject.name }}</span>
+                                    <div class="schedule-cell-meta">
+                                        <span>{{ cell.schedule.teacher.full_name|default:"Professor nao definido" }}</span>
+                                        {% if cell.schedule.room_label %}
+                                        <small>Sala {{ cell.schedule.room_label }}</small>
+                                        {% endif %}
+                                    </div>
+                                    {% endif %}
+                                {% else %}
+                                <span class="muted-text">Livre</span>
+                                {% endif %}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
             {% else %}
-                <p>Este cronograma ainda não possui horários cadastrados.</p>
+            <div class="empty-state">
+                <strong>Sem horários cadastrados.</strong>
+                <p>Essa turma ainda não tem cronograma semanal definido.</p>
+            </div>
             {% endif %}
-        </section>
-    </main>
+        </div>
+    </div>
 
-    <script src="/assets/js/script.js"></script>
-</body>
-</html>
+    <aside class="app-content-aside">
+        <div class="card">
+            <h3 class="widget-title">Leitura rápida</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Turno</strong>
+                    <span class="muted-text">{{ classroom.get_shift_display }}</span>
+                </div>
+                <div>
+                    <strong>Professor regente</strong>
+                    <span class="muted-text">{{ classroom.homeroom_teacher.full_name|default:"Nao definido" }}</span>
+                </div>
+            </div>
+        </div>
+    </aside>
+</section>
+{% endblock %}

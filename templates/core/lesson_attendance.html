@@ -1,167 +1,119 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Frequência da Aula | Educas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body class="app-page">
-    <header class="main-header">
-        <div class="container header-container app-header">
-            <a href="/professor.html" class="logo">
-                <img src="/assets/img/logo.png" alt="Logo Educas">
-                Educas
-            </a>
-            <button class="menu-toggle" type="button" aria-label="Abrir menu">
-                <span></span>
-                <span></span>
-                <span></span>
-            </button>
-            <nav class="navbar navbar-static" aria-label="Navegacao principal">
-                <ul>
-                    <li><a href="/professor.html"><span aria-hidden="true">Professor</span> Painel</a></li>
-                    <li><a href="/aulas.html"><span aria-hidden="true">Aulas</span> Registro de Aulas</a></li>
-                    <li><a href="/attendance.html"><span aria-hidden="true">Frequência</span> Resumo</a></li>
-                </ul>
-            </nav>
-            <div class="nav-overlay"></div>
-            <div class="header-actions">
-                <a href="/profile.html" class="text-link">{{ request.user.role_label }}</a>
-                <a href="/logout/" class="btn btn-secondary btn-compact">Sair</a>
+{% extends "core/base_app.html" %}
+
+{% block title %}Frequência da Aula | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Frequência por aula</span>
+        <h1>{{ lesson.subject.name }} - {{ lesson.classroom.name }}</h1>
+        <p>Sem navbar paralela, sem sidebar paralela, sem palhaçada visual. Só a tela útil.</p>
+    </div>
+    <a href="{% url 'core:aulas' %}" class="btn btn-secondary btn-compact">Voltar às aulas</a>
+</div>
+
+<section class="app-content-grid detail-layout">
+    <div class="app-content-primary">
+        <div class="detail-summary-grid">
+            <article class="card stat-card">
+                <span>Professor</span>
+                <strong>{{ lesson.professor.full_name|default:lesson.professor.email }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Data</span>
+                <strong>{{ lesson.date|date:"d/m/Y" }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Presença</span>
+                <strong>{{ attendance_summary.presence_percentage }}%</strong>
+            </article>
+        </div>
+
+        <div class="card detail-main-card">
+            <h2 class="widget-title">Detalhes da aula</h2>
+            <div class="summary-list">
+                <div>
+                    <strong>Conteúdo</strong>
+                    <span class="muted-text">{{ lesson.conteudo }}</span>
+                </div>
+                <div>
+                    <strong>Atividade</strong>
+                    <span class="muted-text">{{ lesson.atividade|default:"Nenhuma atividade registrada." }}</span>
+                </div>
+                <div>
+                    <strong>Total de faltas</strong>
+                    <span class="muted-text">{{ attendance_summary.total_absences }} no conjunto da aula.</span>
+                </div>
             </div>
         </div>
-    </header>
 
-    <main class="app-container">
-        <aside class="sidebar-left">
-            <div class="card sidebar-menu">
-                <ul>
-                    <li><a href="/professor.html"><span aria-hidden="true">Professor</span> Painel</a></li>
-                    <li><a href="/aulas.html"><span aria-hidden="true">Aulas</span> Registro de Aulas</a></li>
-                    <li><a href="/attendance.html"><span aria-hidden="true">Frequência</span> Resumo</a></li>
-                </ul>
-            </div>
-        </aside>
-
-        <section class="app-main">
-            <div class="page-heading page-heading-row">
+        <div class="card detail-main-card">
+            <div class="section-card-header">
                 <div>
-                    <span class="page-kicker">Frequência por Aula</span>
-                    <h1>{{ lesson.subject.name }} — {{ lesson.classroom.name }}</h1>
-                    <p>Registre faltas desta aula vinculada ao registro existente e ao histórico do aluno.</p>
+                    <span class="page-kicker">Lançamento</span>
+                    <h2>Registrar faltas</h2>
                 </div>
-                <a href="/aulas.html" class="btn btn-secondary btn-compact">Voltar para aulas</a>
+                <span class="section-counter">{{ student_data|length }} aluno(s)</span>
             </div>
-
-            <div class="dashboard-grid">
-                <div class="card metric-card">
-                    <span class="metric-label">Professor</span>
-                    <strong>{{ lesson.professor.full_name }}</strong>
-                    <span class="metric-status positive">{{ lesson.classroom.name }}</span>
+            <form method="post" class="contact-form">
+                {% csrf_token %}
+                <div class="table-wrap">
+                    <table class="compact-table">
+                        <thead>
+                            <tr>
+                                <th>Aluno</th>
+                                <th>Matrícula</th>
+                                <th>Situação</th>
+                                <th>Faltas</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in student_data %}
+                            <tr>
+                                <td>{{ row.student.full_name|default:row.student.email }}</td>
+                                <td>{{ row.registration_code }}</td>
+                                <td>{{ row.status }}</td>
+                                <td>
+                                    <select name="absences_{{ row.student.id }}">
+                                        {% for value in option_range %}
+                                        <option value="{{ value }}" {% if row.absences == value %}selected{% endif %}>{{ value }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4">Nenhum aluno matriculado nesta turma.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
                 </div>
-                <div class="card metric-card">
-                    <span class="metric-label">Data da Aula</span>
-                    <strong>{{ lesson.date|date:"d/m/Y" }}</strong>
-                    <span class="metric-status positive">{{ lesson.quantidade_aulas }} aula(s)</span>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Salvar frequência</button>
                 </div>
-                <div class="card metric-card">
-                    <span class="metric-label">Total de faltas</span>
-                    <strong>{{ attendance_summary.total_absences }}</strong>
-                    <span class="metric-status {% if attendance_summary.presence_percentage >= 90 %}positive{% elif attendance_summary.presence_percentage >= 75 %}warning{% else %}danger{% endif %}">Presença {{ attendance_summary.presence_percentage }}%</span>
+            </form>
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card detail-meta-card">
+            <h3 class="widget-title">Regras rápidas</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>0 faltas</strong>
+                    <span class="muted-text">Compareceu integralmente.</span>
                 </div>
-            </div>
-
-            <div class="card">
-                <h3 class="widget-title">Detalhes da Aula</h3>
-                <div class="summary-list">
-                    <div>
-                        <strong>Conteúdo:</strong>
-                        <span class="muted-text">{{ lesson.conteudo }}</span>
-                    </div>
-                    <div>
-                        <strong>Atividade:</strong>
-                        <span class="muted-text">{{ lesson.atividade|default:"Nenhuma atividade registrada." }}</span>
-                    </div>
+                <div>
+                    <strong>1 a {{ lesson.quantidade_aulas }} faltas</strong>
+                    <span class="muted-text">Registre conforme os horários perdidos.</span>
                 </div>
-            </div>
-
-            <div class="card">
-                <h3 class="widget-title">Lançar faltas</h3>
-                <form method="post" class="contact-form">
-                    {% csrf_token %}
-                    <p class="field-description">Selecione quantas faltas cada aluno teve de acordo com o número de aulas ministradas.</p>
-                    <div class="table-wrap">
-                        <table class="compact-table">
-                            <thead>
-                                <tr>
-                                    <th>Aluno</th>
-                                    <th>Matrícula</th>
-                                    <th>Situação</th>
-                                    <th>Faltas</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in student_data %}
-                                <tr>
-                                    <td class="student-cell">
-                                        {% if row.student.avatar_url %}
-                                        <img src="{{ row.student.avatar_url }}" alt="{{ row.student.full_name }}" class="avatar avatar-small">
-                                        {% else %}
-                                        <span class="avatar avatar-small">{{ row.student.first_name|slice:":1" }}</span>
-                                        {% endif %}
-                                        <div>
-                                            <strong>{{ row.student.full_name }}</strong>
-                                            <span class="muted-text">{{ row.student.email }}</span>
-                                        </div>
-                                    </td>
-                                    <td>{{ row.registration_code }}</td>
-                                    <td>{{ row.status }}</td>
-                                    <td>
-                                        <select name="absences_{{ row.student.id }}">
-                                            {% for value in option_range %}
-                                            <option value="{{ value }}" {% if row.absences == value %}selected{% endif %}>{{ value }}</option>
-                                            {% endfor %}
-                                        </select>
-                                    </td>
-                                </tr>
-                                {% empty %}
-                                <tr>
-                                    <td colspan="4">Nenhum aluno matriculado nesta turma.</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                    <div class="form-actions">
-                        <button type="submit" class="btn btn-primary">Salvar Frequência</button>
-                    </div>
-                </form>
-            </div>
-        </section>
-
-        <aside class="sidebar-right">
-            <div class="card">
-                <h3 class="widget-title">Regras de lançamento</h3>
-                <div class="summary-list">
-                    <div>
-                        <strong>0 faltas</strong>
-                        <span class="muted-text">Compareceu integralmente.</span>
-                    </div>
-                    <div>
-                        <strong>1 a {{ lesson.quantidade_aulas }} faltas</strong>
-                        <span class="muted-text">Registre de acordo com horários perdidos.</span>
-                    </div>
-                    <div>
-                        <strong>Sem duplicações</strong>
-                        <span class="muted-text">Cada aluno tem apenas um registro por aula.</span>
-                    </div>
+                <div>
+                    <strong>Registro único</strong>
+                    <span class="muted-text">Cada aluno mantém um único lançamento por aula.</span>
                 </div>
             </div>
-        </aside>
-    </main>
-
-    <script src="/assets/js/script.js"></script>
-</body>
-</html>
+        </div>
+    </aside>
+</section>
+{% endblock %}

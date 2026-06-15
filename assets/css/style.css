@@ -1324,7 +1324,21 @@ body.dark-mode .auth-wrapper {
 }
 
 .app-shell-main {
-    padding: 22px;
+    width: 100%;
+    max-width: 1480px;
+    margin: 0 auto;
+    padding: 24px;
+}
+
+.app-top-nav {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 24px 0;
+}
+
+.app-top-nav-spacer {
+    flex: 1;
 }
 
 .app-shell-overlay {
@@ -1363,6 +1377,38 @@ body.dark-mode .auth-wrapper {
     background: var(--text-dark);
 }
 
+.notification-bell {
+    position: relative;
+    min-width: 48px;
+    height: 48px;
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    background: var(--background-white);
+    color: var(--text-dark);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: var(--card-shadow);
+}
+
+.notif-badge {
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 999px;
+    background: #dc2626;
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 800;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
 .app-content-grid {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 300px;
@@ -1384,7 +1430,7 @@ body.dark-mode .auth-wrapper {
 }
 
 .feed-layout {
-    grid-template-columns: minmax(0, 1fr) 290px;
+    grid-template-columns: minmax(0, 1.6fr) minmax(280px, 0.8fr);
 }
 
 .composer-card,
@@ -1531,6 +1577,10 @@ body.dark-mode .auth-wrapper {
     margin-top: 14px;
     padding-top: 14px;
     border-top: 1px solid var(--border-color);
+}
+
+.post-comments-card {
+    margin-top: 1rem;
 }
 
 .assignment-card-grid {
@@ -1681,6 +1731,87 @@ body.dark-mode .auth-wrapper {
     min-height: 300px;
 }
 
+.feed-sidebar,
+.detail-layout .app-content-aside,
+.settings-layout .app-content-aside {
+    position: sticky;
+    top: 24px;
+}
+
+.detail-layout {
+    grid-template-columns: minmax(0, 1.75fr) minmax(260px, 0.85fr);
+}
+
+.detail-main-card,
+.detail-meta-card,
+.settings-section,
+.notification-list {
+    display: grid;
+    gap: 20px;
+}
+
+.detail-hero-grid,
+.detail-summary-grid,
+.settings-panel-grid {
+    display: grid;
+    gap: 20px;
+}
+
+.detail-hero-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.detail-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.detail-rich-text p {
+    margin: 0;
+}
+
+.detail-submission-list {
+    padding-top: 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.settings-panel-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.settings-section {
+    scroll-margin-top: 120px;
+}
+
+.notif-item,
+.notification-row {
+    display: grid;
+    gap: 6px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s ease;
+}
+
+.notif-item:hover,
+.notification-row:hover {
+    background: rgba(15, 91, 216, 0.05);
+}
+
+.notif-item.is-unread {
+    background: rgba(15, 91, 216, 0.08);
+}
+
+.notification-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: start;
+}
+
+.notification-row p,
+.notification-time,
+.notif-item span,
+.notif-item small {
+    color: var(--text-light);
+}
+
 @media (max-width: 1280px) {
     .app-content-grid,
     .feed-layout {
@@ -1713,6 +1844,97 @@ body.dark-mode .auth-wrapper {
     .app-shell-main {
         padding-top: 6px;
     }
+}
+
+/* ESTRUTURA GLOBAL - OCUPAÇÃO DE ESPAÇO */
+:root { --sidebar-w: 280px; }
+.app-shell { display: flex; min-height: 100vh; background: var(--background-light); width: 100%; }
+.app-sidebar { 
+    width: var(--sidebar-w); 
+    position: sticky; 
+    top: 0; 
+    height: 100vh; 
+    overflow-y: auto; 
+    flex-shrink: 0;
+    z-index: 50;
+}
+.app-shell-body { flex-grow: 1; min-width: 0; display: flex; flex-direction: column; width: calc(100% - var(--sidebar-w)); }
+.app-shell-main { padding: 24px; width: 100%; max-width: 1440px; margin: 0 auto; box-sizing: border-box; }
+
+/* GRID PRINCIPAL - ELIMINAÇÃO DE VAZIOS */
+.app-content-grid, .feed-layout {
+    display: grid;
+    grid-template-columns: 1fr 320px; /* Coluna principal flexível e lateral fixa */
+    gap: 24px;
+    width: 100%;
+    align-items: start;
+}
+
+/* FEED - ESTILO REDE SOCIAL (PUBLICAÇÃO -> POSTS) */
+.app-content-primary {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    width: 100%;
+}
+
+/* DROPDOWN DE NOTIFICAÇÕES (SINO) */
+.notif-dropdown-wrapper { position: relative; }
+.notif-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 340px;
+    background: var(--background-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--card-shadow);
+    display: none;
+    z-index: 1000;
+    overflow: hidden;
+}
+.notif-dropdown.is-open { display: block; animation: fadeInUp 0.2s ease-out; }
+.notif-header { padding: 12px 16px; border-bottom: 1px solid var(--border-color); display: flex; justify-content: space-between; font-weight: 700; }
+.notif-list { max-height: 400px; overflow-y: auto; }
+.notif-empty { padding: 24px; text-align: center; color: var(--text-light); }
+.notif-footer { padding: 12px; border-top: 1px solid var(--border-color); text-align: center; font-size: 0.9rem; }
+
+/* Padronização de Formulários UX */
+input[type="text"], input[type="email"], input[type="password"], 
+input[type="number"], input[type="date"], select, textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border: 1.5px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--background-white);
+    color: var(--text-dark);
+    transition: all 0.2s ease;
+}
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 4px rgba(15, 91, 216, 0.1);
+}
+
+/* Abas de Configurações */
+.settings-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+    overflow-x: auto;
+}
+.settings-tab {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    color: var(--text-light);
+    white-space: nowrap;
+}
+.settings-tab.active {
+    background: var(--primary-color);
+    color: #fff;
 }
 
 @media (max-width: 980px) {
@@ -2842,5 +3064,134 @@ body.dark-mode .large-calendar > button span {
 
     .contact-panel h3 {
         font-size: 1.6rem;
+    }
+}
+
+/* Arquitetura unificada da shell autenticada */
+.notif-dropdown-wrapper {
+    position: relative;
+}
+
+.notif-dropdown {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    width: 340px;
+    background: var(--background-white);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    box-shadow: var(--card-shadow);
+    display: none;
+    z-index: 1000;
+    overflow: hidden;
+}
+
+.notif-dropdown.is-open {
+    display: block;
+    animation: fadeInUp 0.2s ease-out;
+}
+
+.notif-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+    font-weight: 700;
+}
+
+.notif-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.notif-empty {
+    padding: 24px;
+    text-align: center;
+    color: var(--text-light);
+}
+
+.notif-footer {
+    padding: 12px;
+    border-top: 1px solid var(--border-color);
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.settings-tabs {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 12px;
+    overflow-x: auto;
+}
+
+.settings-tab {
+    padding: 10px 20px;
+    border-radius: 10px;
+    font-weight: 600;
+    color: var(--text-light);
+    white-space: nowrap;
+}
+
+.settings-tab.active {
+    background: var(--primary-color);
+    color: #fff;
+}
+
+@media (max-width: 980px) {
+    .app-content-grid,
+    .feed-layout,
+    .detail-layout,
+    .dashboard-grid-tight,
+    .composer-form-grid,
+    .detail-hero-grid,
+    .detail-summary-grid,
+    .settings-panel-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .feed-sidebar,
+    .detail-layout .app-content-aside,
+    .settings-layout .app-content-aside {
+        position: static;
+    }
+
+    .stats-grid,
+    .stats-grid-wide {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 640px) {
+    .app-top-nav,
+    .app-shell-main {
+        padding-left: 16px;
+        padding-right: 16px;
+    }
+
+    .dashboard-grid,
+    .stats-grid,
+    .stats-grid-wide,
+    .composer-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .composer-heading,
+    .page-heading-row,
+    .section-card-header {
+        align-items: flex-start;
+    }
+
+    .composer-heading {
+        display: grid;
+    }
+
+    .sidebar-join-row {
+        grid-template-columns: 1fr;
+    }
+
+    .composer-actions,
+    .page-heading-row > .btn,
+    .page-heading-row > a.btn {
+        width: 100%;
     }
 }

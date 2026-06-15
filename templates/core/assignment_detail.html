@@ -1,81 +1,120 @@
-<!DOCTYPE html>
-<html lang="pt-br">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Detalhes da Atividade | Educas</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="/assets/css/style.css">
-</head>
-<body class="app-page">
-    <header class="main-header">
-        <div class="container header-container app-header">
-            <a href="/professor.html" class="logo">
-                <img src="/assets/img/logo.png" alt="Logo Educas">
-                Educas
-            </a>
-            <nav class="navbar navbar-static" aria-label="Navegacao principal">
-                <ul>
-                    <li><a href="/professor/atividades.html">Atividades</a></li>
-                    <li><a href="/professor/atividades/{{ assignment.id }}/detalhe.html" class="active">Detalhes</a></li>
-                </ul>
-            </nav>
-            <div class="header-actions">
-                <a href="/profile.html" class="text-link">Meu perfil</a>
-                <a href="/logout/" class="btn btn-secondary btn-compact">Sair</a>
+{% extends "core/base_app.html" %}
+
+{% block title %}Detalhes da Atividade | Educas{% endblock %}
+
+{% block app_content %}
+<div class="page-heading page-heading-row">
+    <div>
+        <span class="page-kicker">Atividade</span>
+        <h1>{{ assignment.title }}</h1>
+        <p>{{ assignment.description }}</p>
+    </div>
+    <a href="{% url 'core:assignment_list' %}" class="btn btn-secondary btn-compact">Voltar às atividades</a>
+</div>
+
+<section class="app-content-grid detail-layout">
+    <div class="app-content-primary">
+        <div class="card detail-main-card">
+            <div class="detail-hero-grid">
+                <section class="detail-section">
+                    <h2 class="widget-title">Descrição</h2>
+                    <div class="detail-rich-text">
+                        <p>{{ assignment.description|linebreaksbr }}</p>
+                    </div>
+                </section>
+
+                <section class="detail-section">
+                    <h2 class="widget-title">Orientações</h2>
+                    <div class="summary-list">
+                        <div>
+                            <strong>Fluxo de correção</strong>
+                            <span class="muted-text">Use esta visão para acompanhar entregas reais e o que ainda está pendente.</span>
+                        </div>
+                        <div>
+                            <strong>Anexo da atividade</strong>
+                            <span class="muted-text">{% if assignment.attachment %}<a href="{{ assignment.attachment.url }}" target="_blank" rel="noopener noreferrer">Abrir material anexado</a>{% else %}Nenhum arquivo enviado pelo professor.{% endif %}</span>
+                        </div>
+                    </div>
+                </section>
             </div>
         </div>
-    </header>
-    <main class="app-container">
-        <section class="app-main">
-            <div class="page-heading">
-                <span class="page-kicker">Atividade</span>
-                <h1>{{ assignment.title }}</h1>
-                <p>{{ assignment.description }}</p>
+
+        <div class="detail-summary-grid">
+            <article class="card stat-card">
+                <span>Total de alunos</span>
+                <strong>{{ total_students }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Enviados</span>
+                <strong>{{ total_submissions }}</strong>
+            </article>
+            <article class="card stat-card">
+                <span>Pendentes</span>
+                <strong>{{ pending_submissions }}</strong>
+            </article>
+        </div>
+
+        <div class="card detail-main-card">
+            <div class="section-card-header">
+                <div>
+                    <span class="page-kicker">Entregas</span>
+                    <h2>Envios dos alunos</h2>
+                </div>
+                <span class="section-counter">{{ total_submissions }} recebido(s)</span>
             </div>
-            <div class="card">
-                <div class="summary-list">
-                    <div><strong>Turma:</strong> {{ assignment.classroom.name }}</div>
-                    <div><strong>Disciplina:</strong> {{ assignment.subject.name }}</div>
-                    <div><strong>Prazo:</strong> {{ assignment.due_at|date:"d/m/Y H:i" }}</div>
-                    <div><strong>Status:</strong> {% if assignment.is_closed %}Encerrada{% else %}Aberta{% endif %}</div>
-                    {% if assignment.attachment %}
-                    <div><strong>Anexo:</strong> <a href="{{ assignment.attachment.url }}" target="_blank">Baixar</a></div>
-                    {% endif %}
+            <div class="table-wrap">
+                <table class="compact-table">
+                    <thead>
+                        <tr>
+                            <th>Aluno</th>
+                            <th>Enviado em</th>
+                            <th>Status</th>
+                            <th>Arquivo</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for submission in submissions %}
+                        <tr>
+                            <td>{{ submission.student.full_name|default:submission.student.email }}</td>
+                            <td>{{ submission.submitted_at|date:"d/m/Y H:i"|default:"-" }}</td>
+                            <td>{{ submission.get_status_display }}</td>
+                            <td>{% if submission.attachment %}<a href="{{ submission.attachment.url }}" target="_blank" rel="noopener noreferrer">Baixar</a>{% else %}-{% endif %}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="4">Nenhuma entrega registrada ainda.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <aside class="app-content-aside">
+        <div class="card detail-meta-card">
+            <h3 class="widget-title">Resumo da atividade</h3>
+            <div class="summary-list">
+                <div>
+                    <strong>Turma</strong>
+                    <span class="muted-text">{{ assignment.classroom.name }}</span>
+                </div>
+                <div>
+                    <strong>Disciplina</strong>
+                    <span class="muted-text">{{ assignment.subject.name }}</span>
+                </div>
+                <div>
+                    <strong>Prazo</strong>
+                    <span class="muted-text">{{ assignment.due_at|date:"d/m/Y H:i" }}</span>
+                </div>
+                <div>
+                    <strong>Status</strong>
+                    <span class="status-pill {% if assignment.is_closed %}attention{% else %}approved{% endif %}">
+                        {% if assignment.is_closed %}Encerrada{% else %}Aberta{% endif %}
+                    </span>
                 </div>
             </div>
-            <div class="card">
-                <h3 class="widget-title">Entregas</h3>
-                <div class="table-wrap">
-                    <table class="compact-table">
-                        <thead>
-                            <tr>
-                                <th>Aluno</th>
-                                <th>Enviado em</th>
-                                <th>Status</th>
-                                <th>Arquivo</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for submission in submissions %}
-                            <tr>
-                                <td>{{ submission.student.full_name }}</td>
-                                <td>{{ submission.submitted_at|date:"d/m/Y H:i" }}</td>
-                                <td>{{ submission.get_status_display }}</td>
-                                <td>{% if submission.attachment %}<a href="{{ submission.attachment.url }}" target="_blank">Download</a>{% else %}-{% endif %}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4">Nenhuma entrega registrada ainda.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-                <a href="/professor/atividades.html" class="btn btn-secondary">Voltar</a>
-            </div>
-        </section>
-    </main>
-    <script src="/assets/js/script.js"></script>
-</body>
-</html>
+        </div>
+    </aside>
+</section>
+{% endblock %}

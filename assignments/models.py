@@ -40,16 +40,16 @@ class Assignment(models.Model):
     def is_closed(self):
         return self.status == self.Status.CLOSED or self.due_at <= timezone.now()
 
+    @property
+    def current_submission_count(self):
+        return self.submissions.count()
+
     def close_if_expired(self):
         if self.status != self.Status.CLOSED and self.due_at <= timezone.now():
             self.status = self.Status.CLOSED
             self.closed_at = self.closed_at or timezone.now()
             self.save(update_fields=["status", "closed_at", "updated_at"])
         return self.status
-
-    @property
-    def submission_count(self):
-        return self.submissions.count()
 
     def clean(self):
         if self.closed_at and self.status != self.Status.CLOSED:
@@ -108,8 +108,10 @@ class Submission(models.Model):
 class Notification(models.Model):
     class NotificationType(models.TextChoices):
         NEW_ACTIVITY = "new_activity", "Nova atividade"
-        DUE_SOON = "due_soon", "Prazo próximo"
-        CORRECTION = "correction", "Correção realizada"
+        DUE_SOON = "due_soon", "Prazo proximo"
+        CORRECTION = "correction", "Correcao realizada"
+        COMMENT = "comment", "Comentario"
+        GRADE = "grade", "Nota lancada"
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
